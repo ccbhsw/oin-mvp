@@ -4,7 +4,7 @@
 
 ## 运行边界
 
-当前演示在一个 OIN Core sandbox 内以三个本地目录运行：`operator-a`、`operator-b` 和 `operator-c`。每个目录都拥有独立的 Ed25519 密钥、身份文件、证据存储、导出目录、导入目录及复制记录。演示只证明**LOCAL SIMULATION** 的机制与可移植性，不能证明真实组织、法律主体、资金、地理位置或网络控制面的独立性。
+当前演示在一个 隔离沙盒 内以三个本地目录运行：`operator-a`、`operator-b` 和 `operator-c`。每个目录都拥有独立的 Ed25519 密钥、身份文件、证据存储、导出目录、导入目录及复制记录。演示只证明**LOCAL SIMULATION** 的机制与可移植性，不能证明真实组织、法律主体、资金、地理位置或网络控制面的独立性。
 
 未来拆分到独立机器时，每个 Operator 只需要携带其自身目录，并通过普通文件传输或 HTTP 下载获得对方导出的 artifact。导入程序只读取输入的 export artifact 与公开 descriptor；它不会读取远端 Operator 的内部运行目录、数据库或私钥。
 

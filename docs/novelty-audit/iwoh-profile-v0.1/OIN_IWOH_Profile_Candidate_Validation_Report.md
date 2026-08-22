@@ -1,6 +1,6 @@
 # OIN Independent Web Observation History Profile v0.1 候选创新验证报告
 
-**作者：** OIN Project  
+**作者：OIN 核心团队  
 **日期：** 2026-08-21  
 **审计对象：** `Independent Web Observation History Profile v0.1`（IWOH）  
 **唯一判定问题：** IWOH 是否构成 OIN 不可替代的技术贡献？

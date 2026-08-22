@@ -5,7 +5,15 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 try:
+    try:
+try:
     from datetime import UTC
+except ImportError:
+    from datetime import timezone
+    UTC = timezone.utc
+except ImportError:
+    from datetime import timezone
+    UTC = timezone.utc
 except ImportError:
     import datetime as dt
     UTC = dt.timezone.utc, datetime
