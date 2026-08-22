@@ -38,3 +38,116 @@ def test_cli_init_noninteractive(mock_config_file, mock_isatty, tmp_path):
     result = runner.invoke(cli, ["init", "--endpoint", "http://test-endpoint:8000"])
     assert result.exit_code == 0
     assert "检测到非交互式环境" in result.output
+
+@patch("oin.cli.requests.request")
+def test_cli_verify_conflicts_three(mock_request):
+    # 1. /v1/verify/{obs_id}
+    m_verify = MagicMock(status_code=200)
+    m_verify.json.return_value = {
+        "status": "VALID",
+        "archive_hash_valid": True,
+        "raw_content_hash_valid": True,
+        "raw_content_bytes_valid": True,
+        "manifest": {"signature_valid": True, "manifest_id_valid": True, "errors": []},
+        "transparency_proof_valid": True
+    }
+    # 2. /v1/observations/{obs_id}
+    m_obs = MagicMock(status_code=200)
+    m_obs.json.return_value = {
+        "object": {"object_id": "oin:object:sha256:abc"}
+    }
+    # 3. /v1/objects/{object_id}/conflicts (3 conflicts)
+    m_conf = MagicMock(status_code=200)
+    m_conf.json.return_value = [{"classification": "temporal_variation"}, {"classification": "divergence"}, {"classification": "content_mutation"}]
+
+    mock_request.side_effect = [m_verify, m_obs, m_conf]
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["verify", "oin:observation:sha256:123", "--endpoint", "http://localhost:8000"])
+    assert result.exit_code == 0
+    assert "PASS" in result.output
+    assert "3 个冲突版本" in result.output or "3 个冲突版本" in result.output or "3 个冲突版本" in result.output or "3 个冲突版本" in result.output or "3 个冲突版本" in result.output or "存在 3 个冲突版本" in result.output
+
+@patch("oin.cli.requests.request")
+def test_cli_verify_conflicts_zero(mock_request):
+    m_verify = MagicMock(status_code=200)
+    m_verify.json.return_value = {
+        "status": "VALID",
+        "archive_hash_valid": True,
+        "raw_content_hash_valid": True,
+        "raw_content_bytes_valid": True,
+        "manifest": {"signature_valid": True, "manifest_id_valid": True, "errors": []},
+        "transparency_proof_valid": True
+    }
+    m_obs = MagicMock(status_code=200)
+    m_obs.json.return_value = {
+        "object": {"object_id": "oin:object:sha256:abc"}
+    }
+    m_conf = MagicMock(status_code=200)
+    m_conf.json.return_value = []
+
+    mock_request.side_effect = [m_verify, m_obs, m_conf]
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["verify", "oin:observation:sha256:123", "--endpoint", "http://localhost:8000"])
+    assert result.exit_code == 0
+    assert "PASS" in result.output
+    assert "冲突版本" not in result.output
+
+@patch("oin.cli.requests.request")
+def test_cli_verify_invalid_signature(mock_request):
+    m_verify = MagicMock(status_code=200)
+    m_verify.json.return_value = {
+        "status": "INVALID",
+        "archive_hash_valid": True,
+        "raw_content_hash_valid": True,
+        "raw_content_bytes_valid": True,
+        "manifest": {"signature_valid": False, "manifest_id_valid": True, "errors": ["signature invalid"]},
+        "transparency_proof_valid": True
+    }
+    m_obs = MagicMock(status_code=200)
+    m_obs.json.return_value = {"object": {"object_id": "oin:object:sha256:abc"}}
+    m_conf = MagicMock(status_code=200)
+    m_conf.json.return_value = []
+
+    mock_request.side_effect = [m_verify, m_obs, m_conf]
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["verify", "oin:observation:sha256:123", "--endpoint", "http://localhost:8000"])
+    assert result.exit_code != 0
+    assert "FAIL" in result.output
+    assert "签名无效" in result.output
+
+@patch("oin.cli.requests.request")
+def test_cli_verify_invalid_merkle(mock_request):
+    m_verify = MagicMock(status_code=200)
+    m_verify.json.return_value = {
+        "status": "INVALID",
+        "archive_hash_valid": True,
+        "raw_content_hash_valid": True,
+        "raw_content_bytes_valid": True,
+        "manifest": {"signature_valid": True, "manifest_id_valid": True, "errors": []},
+        "transparency_proof_valid": False
+    }
+    m_obs = MagicMock(status_code=200)
+    m_obs.json.return_value = {"object": {"object_id": "oin:object:sha256:abc"}}
+    m_conf = MagicMock(status_code=200)
+    m_conf.json.return_value = []
+
+    mock_request.side_effect = [m_verify, m_obs, m_conf]
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["verify", "oin:observation:sha256:123", "--endpoint", "http://localhost:8000"])
+    assert result.exit_code != 0
+    assert "FAIL" in result.output
+    assert "Merkle 证明无效" in result.output
+
+@patch("oin.cli.requests.request")
+def test_cli_verify_object_not_found(mock_request):
+    m_verify = MagicMock(status_code=404)
+    mock_request.side_effect = [m_verify]
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["verify", "oin:observation:sha256:nonexistent", "--endpoint", "http://localhost:8000"])
+    assert result.exit_code != 0
+    assert "对象不存在" in result.output or "未找到" in result.output

@@ -111,18 +111,21 @@ def verify(identifier, endpoint, verbose, json_output):
     obs_id = identifier
     if identifier.startswith("oin:object:"):
         resp = api_request("GET", ep, f"/v1/objects/{identifier}/observations")
-        if resp.status_code != 200:
+        if resp.status_code == 404:
+            click.echo(f"错误: 对象不存在 ({identifier})", err=True)
+            sys.exit(1)
+        elif resp.status_code != 200:
             click.echo(f"错误: 无法获取对象 {identifier} 的观测记录 (HTTP {resp.status_code})", err=True)
             sys.exit(1)
         obs_list = resp.json()
         if not obs_list:
-            click.echo(f"错误: 对象 {identifier} 没有找到任何观测记录", err=True)
+            click.echo(f"错误: 对象不存在 ({identifier})", err=True)
             sys.exit(1)
         obs_id = obs_list[-1]["observation_id"]
     
     resp = api_request("GET", ep, f"/v1/verify/{obs_id}")
     if resp.status_code == 404:
-        click.echo(f"错误: 未找到对应的观测记录 ({obs_id})", err=True)
+        click.echo(f"错误: 对象不存在或观测记录不存在 ({obs_id})", err=True)
         sys.exit(1)
     elif resp.status_code != 200:
         click.echo(f"验证请求失败 (HTTP {resp.status_code}): {resp.text}", err=True)
@@ -132,6 +135,10 @@ def verify(identifier, endpoint, verbose, json_output):
     status = result.get("status")
     pass_fail = "PASS" if status == "VALID" else "FAIL"
     
+    manifest_res = result.get("manifest", {})
+    sig_valid = manifest_res.get("signature_valid", True)
+    merkle_valid = result.get("transparency_proof_valid", True)
+
     obs_resp = api_request("GET", ep, f"/v1/observations/{obs_id}")
     object_id = None
     conflict_count = 0
@@ -154,24 +161,30 @@ def verify(identifier, endpoint, verbose, json_output):
             "object_id": object_id
         }
         click.echo(json.dumps(out, indent=2))
+        if pass_fail != "PASS":
+            sys.exit(1)
         return
 
     click.echo(f"验证结果: {pass_fail} (Observation ID: {obs_id})")
     
+    if not sig_valid:
+        click.echo("签名无效")
+    if not merkle_valid:
+        click.echo("Merkle 证明无效")
+
     if verbose:
         click.echo("\n--- 验证明细 ---")
         click.echo(f"  Archive Hash Valid:     {result.get('archive_hash_valid')}")
         click.echo(f"  Raw Content Hash Valid: {result.get('raw_content_hash_valid')}")
         click.echo(f"  Raw Content Bytes Valid:{result.get('raw_content_bytes_valid')}")
-        manifest_res = result.get("manifest", {})
-        click.echo(f"  Signature Valid:        {manifest_res.get('signature_valid')}")
+        click.echo(f"  Signature Valid:        {sig_valid}")
         click.echo(f"  Manifest ID Valid:      {manifest_res.get('manifest_id_valid')}")
-        click.echo(f"  Transparency Proof:     {result.get('transparency_proof_valid')}")
+        click.echo(f"  Transparency Proof:     {merkle_valid}")
         if manifest_res.get("errors"):
             click.echo(f"  Errors:                 {manifest_res.get('errors')}")
 
     if conflict_count > 0 and object_id:
-        click.echo(f"\n[警告] 该对象存在 {conflict_count} 个冲突版本，使用 oin conflicts {object_id} 查看")
+        click.echo(f"\n该对象存在 {conflict_count} 个冲突版本，使用 oin conflicts {object_id} 查看")
 
     if pass_fail != "PASS":
         sys.exit(1)
@@ -181,11 +194,11 @@ def verify(identifier, endpoint, verbose, json_output):
 @click.option("--endpoint", help="指定 OIN 节点 endpoint")
 @click.option("--json", "json_output", is_flag=True, help="以 JSON 格式输出结果")
 def conflicts(object_id, endpoint, json_output):
-    """列出指定对象的所有冲突版本"""
+    """列出指定对象的所有冲突版本（按捕获时间或记录顺序稳定呈现）"""
     ep = get_config_endpoint(endpoint)
     resp = api_request("GET", ep, f"/v1/objects/{object_id}/conflicts")
     if resp.status_code == 404:
-        click.echo(f"错误: 未找到对象 {object_id}", err=True)
+        click.echo(f"错误: 对象不存在 ({object_id})", err=True)
         sys.exit(1)
     elif resp.status_code != 200:
         click.echo(f"获取冲突失败 (HTTP {resp.status_code}): {resp.text}", err=True)
@@ -196,8 +209,11 @@ def conflicts(object_id, endpoint, json_output):
     obs_resp = api_request("GET", ep, f"/v1/objects/{object_id}/observations")
     obs_map = {}
     if obs_resp.status_code == 200:
-        for m in obs_resp.json():
+        obs_list = obs_resp.json()
+        for m in obs_list:
             obs_map[m.get("observation_id")] = m
+
+    conflict_list = sorted(conflict_list, key=lambda x: (x.get("observation_a_id", ""), x.get("observation_b_id", "")))
 
     if json_output:
         click.echo(json.dumps(conflict_list, indent=2))
