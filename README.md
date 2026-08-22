@@ -27,6 +27,10 @@ OIN MVP 是一个**签名、可复制、冲突保留**的公共信息 Observatio
 
 `oin verify`、Node verifier、默认 `SAFE_DEMO` identity 初始化以及默认安全容器运行均不发起网络连接。
 
+验证器独立性说明：OIN 目前有 Python 和 Node.js 两套验证器实现，功能层面均已通过测试，但两套实现由同一执行上下文参考 Python 源码完成，尚未经第三方独立设计验证。我们正在寻找未接触过本项目代码的开发者，仅依据协议文档独立复现验证逻辑，以正式闭合此缺口。
+请参阅 [CONTRIBUTING.md](./CONTRIBUTING.md) 了解如何参与。
+
+
 ## 网络化快速开始（显式选择）
 
 ```bash
