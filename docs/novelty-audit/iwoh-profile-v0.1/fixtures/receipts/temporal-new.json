@@ -1,0 +1,35 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://example.test/iwhoh/v1"
+  ],
+  "id": "https://receipts.example.test/temporal-new",
+  "type": [
+    "VerifiableCredential",
+    "WebObservationSequenceReceipt"
+  ],
+  "profile_version": "IWOH-0.1",
+  "issuer": "https://sequence-primary.example.test",
+  "statement_id": "https://statements.example.test/temporal-new",
+  "log_id": "sequence-primary-log",
+  "ordinal": 2,
+  "interval": {
+    "not_before": "2026-02-09T00:10:00Z",
+    "not_after": "2026-02-09T00:10:01Z"
+  },
+  "predecessor_statement_ids": [
+    "https://statements.example.test/temporal-old"
+  ],
+  "proof": {
+    "type": "DataIntegrityProof",
+    "cryptosuite": "eddsa-jcs-2022",
+    "created": "2026-08-21T00:00:00Z",
+    "verificationMethod": "https://sequence-primary.example.test#key-1",
+    "proofPurpose": "assertionMethod",
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://example.test/iwhoh/v1"
+    ],
+    "proofValue": "z4WsCM2LNfBAwp34PWtcbuwFPo7JbqGywTouUrVpdZgTke1THCoCFgFJDXARJKsqYRV8gTByHP2XK7mHM7zk2PQcy"
+  }
+}

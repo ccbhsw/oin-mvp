@@ -1,0 +1,61 @@
+{
+  "distinct_payloads": [
+    "1f9cce384687782ab52b6196586bb2be4d1849c7d58204698487ac7e7ae71abd",
+    "70395acdd90e801d6ccb487b7651d99650816443c6c44ff39bdcf84562a32f51"
+  ],
+  "matches": [
+    {
+      "binding_valid": true,
+      "bundle": "/bundles/18ba8294ee293ab7ade941c1/",
+      "captured_at": "2026-08-21T03:39:48Z",
+      "evidence_sha256": "0e350ecdd8b519f757cc7d3bcbddcab36c2cd3d019a3314aec3b5a9e2cdd930b",
+      "issuer": "experimental-operator-a",
+      "package_problems": [],
+      "package_valid": true,
+      "payload_sha256": "70395acdd90e801d6ccb487b7651d99650816443c6c44ff39bdcf84562a32f51",
+      "peer": "experimental-operator-a",
+      "signature_valid": true,
+      "statement_id": "18ba8294ee293ab7ade941c1",
+      "statement_sha256": "4b32086fbeb469a06ecf34913fac6c519dac58052fead2fdfe4e7919600eec67",
+      "status": 200,
+      "target": "https://httpbingo.org/uuid",
+      "valid": true
+    },
+    {
+      "binding_valid": true,
+      "bundle": "/bundles/955618e9cec6d86150e3cb6d/",
+      "captured_at": "2026-08-21T03:40:37Z",
+      "evidence_sha256": "35578db410b87fbca8e8d6ff097832113a540d8f3d6aeb374f6b3f7b6e4c6882",
+      "issuer": "experimental-operator-b",
+      "package_problems": [],
+      "package_valid": true,
+      "payload_sha256": "1f9cce384687782ab52b6196586bb2be4d1849c7d58204698487ac7e7ae71abd",
+      "peer": "experimental-operator-b",
+      "signature_valid": true,
+      "statement_id": "955618e9cec6d86150e3cb6d",
+      "statement_sha256": "57046888c848e30ac1cc67389e9b83d815e842fa8f0f9597d891293b01eaaf48",
+      "status": 200,
+      "target": "https://httpbingo.org/uuid",
+      "valid": true
+    }
+  ],
+  "peer_reports": [
+    {
+      "catalog_valid": true,
+      "entries": 6,
+      "peer": "experimental-operator-a"
+    },
+    {
+      "catalog_valid": true,
+      "entries": 6,
+      "peer": "experimental-operator-b"
+    },
+    {
+      "catalog_valid": true,
+      "entries": 2,
+      "peer": "experimental-operator-c"
+    }
+  ],
+  "target": "https://httpbingo.org/uuid",
+  "valid_match_count": 2
+}

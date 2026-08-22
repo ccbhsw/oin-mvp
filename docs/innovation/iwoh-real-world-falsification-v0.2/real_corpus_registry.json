@@ -1,0 +1,149 @@
+{
+  "registry_version": "IWOH-v0.2-real-corpus-0.1",
+  "retrieved_at": "2026-08-21T03:03:57+08:00",
+  "methodology": "Public, lawful, actually accessed sources only. A status of UNAVAILABLE or PARTIAL is not evidence of absence or semantic insufficiency.",
+  "archives": [
+    {
+      "archive_id": "internet_archive_wayback",
+      "name": "Internet Archive Wayback Machine",
+      "public_access": "AVAILABLE",
+      "evidence_source": "https://archive.org/help/wayback_api.php",
+      "access_paths": ["Availability API", "Memento", "CDX Server", "replay URL"]
+    },
+    {
+      "archive_id": "arquivo_pt",
+      "name": "Arquivo.pt",
+      "public_access": "AVAILABLE",
+      "evidence_source": "https://github.com/arquivo/pwa-technologies/wiki/URL-search:-CDX-server-API",
+      "access_paths": ["CDX Server API", "Memento/replay URL"]
+    },
+    {
+      "archive_id": "common_crawl",
+      "name": "Common Crawl",
+      "public_access": "AVAILABLE",
+      "evidence_source": "https://commoncrawl.org/get-started",
+      "access_paths": ["public CDX index", "HTTPS WARC range access"]
+    },
+    {
+      "archive_id": "stanford_sup_webrecorder",
+      "name": "Stanford University Press / Webrecorder digital archives",
+      "public_access": "AVAILABLE",
+      "evidence_source": "https://github.com/webrecorder/sup-digital-web-archives",
+      "access_paths": ["public WACZ download", "public replay URL"]
+    },
+    {
+      "archive_id": "uk_government_web_archive",
+      "name": "UK Government Web Archive",
+      "public_access": "PARTIAL",
+      "evidence_source": "https://www.nationalarchives.gov.uk/webarchive/",
+      "access_paths": ["public collection and search UI"],
+      "automated_capture_query": "UNAVAILABLE_FOR_AUTOMATED_COLLECTION",
+      "reason": "The submitted public URL query was stopped by a human-verification page; no bypass was attempted."
+    }
+  ],
+  "evidence_records": [
+    {
+      "evidence_id": "IA-EXAMPLE-2010",
+      "archive_id": "internet_archive_wayback",
+      "original_url": "http://example.com/",
+      "capture_url": "https://web.archive.org/web/20100102003410id_/http://example.com/",
+      "capture_datetime": "2010-01-02T00:34:10Z",
+      "metadata_url": "https://archive.org/wayback/available?url=example.com&timestamp=20100101",
+      "archive_metadata": {"status": "200", "available": true},
+      "warc_wacz_availability": "UNAVAILABLE_IN_THIS_AUDIT",
+      "public_access": "AVAILABLE",
+      "observation": "Replay was actually accessed; visible content is the legacy reserved-domain notice."
+    },
+    {
+      "evidence_id": "IA-EXAMPLE-2024",
+      "archive_id": "internet_archive_wayback",
+      "original_url": "http://example.com/",
+      "capture_url": "https://web.archive.org/web/20240101235841id_/http://example.com/",
+      "capture_datetime": "2024-01-01T23:58:41Z",
+      "metadata_url": "https://archive.org/wayback/available?url=example.com&timestamp=20240101",
+      "archive_metadata": {"status": "200", "available": true},
+      "warc_wacz_availability": "UNAVAILABLE_IN_THIS_AUDIT",
+      "public_access": "AVAILABLE",
+      "observation": "Replay was actually accessed; visible content is the current Example Domain representation."
+    },
+    {
+      "evidence_id": "IA-CDX-EXAMPLE-URL-VARIANTS",
+      "archive_id": "internet_archive_wayback",
+      "original_url": "http://example.com/",
+      "capture_url": "UNAVAILABLE_NOT_A_SINGLE_CAPTURE",
+      "capture_datetime": "MULTIPLE",
+      "metadata_url": "https://web.archive.org/cdx/search/cdx?url=http%3A%2F%2Fexample.com%2F&matchType=exact&output=json&fl=timestamp,original,statuscode,digest,mimetype&filter=statuscode:200&collapse=digest&limit=20",
+      "archive_metadata": {"fields": ["timestamp", "original", "statuscode", "digest", "mimetype"], "examples": ["http://example.com:80/", "http://www.example.com/", "http://example.com/", "https://example.com/", "http://example.com:80/?"]},
+      "warc_wacz_availability": "UNAVAILABLE_IN_THIS_AUDIT",
+      "public_access": "AVAILABLE",
+      "observation": "A real CDX response exposes URL forms and digest-distinct rows but no target-equivalence rule."
+    },
+    {
+      "evidence_id": "ARQUIVO-EXAMPLE-20100323",
+      "archive_id": "arquivo_pt",
+      "original_url": "http://www.example.com/",
+      "capture_url": "https://arquivo.pt/noFrame/replay/20100323155533id_/http://www.example.com/",
+      "capture_datetime": "2010-03-23T15:55:33Z",
+      "metadata_url": "https://arquivo.pt/wayback/cdx?url=http%3A%2F%2Fexample.com%2F&output=json&fields=url,timestamp,status,digest,length,offset,filename&limit=20",
+      "archive_metadata": {"status": "200", "digest": "EF7YLJGKQUMLJFP3F7A7LBALC65T5W2O", "length": "538", "offset": "678670", "filename": "IAH-20100323155325-00000-p12.arquivo.pt.arc.gz"},
+      "warc_wacz_availability": "INDEXED_ARC_LOCATION_ONLY",
+      "public_access": "AVAILABLE",
+      "observation": "Replay was actually accessed; CDX exposes one ARC location and digest."
+    },
+    {
+      "evidence_id": "IA-EXAMPLE-20100323",
+      "archive_id": "internet_archive_wayback",
+      "original_url": "http://www.example.com/",
+      "capture_url": "https://web.archive.org/web/20100323155533/http://www.example.com/",
+      "capture_datetime": "2010-03-23T15:55:33Z",
+      "metadata_url": "https://archive.org/wayback/available?url=www.example.com&timestamp=20100323",
+      "archive_metadata": {"status": "200", "available": true},
+      "warc_wacz_availability": "UNAVAILABLE_IN_THIS_AUDIT",
+      "public_access": "AVAILABLE",
+      "observation": "Availability API reports the same 14-digit capture datetime as Arquivo.pt."
+    },
+    {
+      "evidence_id": "CC-SATURN-20260714",
+      "archive_id": "common_crawl",
+      "original_url": "https://en.wikipedia.org/wiki/Saturn",
+      "capture_url": "https://data.commoncrawl.org/crawl-data/CC-MAIN-2026-30/segments/1783663951715.36/warc/CC-MAIN-20260714151556-20260714181556-00651.warc.gz",
+      "capture_datetime": "2026-07-14T15:42:28Z",
+      "metadata_url": "https://index.commoncrawl.org/CC-MAIN-2026-30-index?url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FSaturn&output=json&filter=status%3A200&limit=5",
+      "archive_metadata": {"status": "200", "digest": "HO4IXO5J5LQSUBV7QTCX6VDBOKDBONSE", "length": "172162", "offset": "180423195", "recordid": "019f614b-3ce1-7dd1-976e-6b2f24bd6f26", "language": "eng"},
+      "warc_wacz_availability": "WARC_RANGE_RETRIEVED",
+      "public_access": "AVAILABLE",
+      "local_evidence": "evidence/commoncrawl-saturn/record.headers.txt",
+      "observation": "Raw WARC response headers reveal content-language, Vary dimensions, cookie/auth/user-agent/geographic request context and payload/block digests."
+    },
+    {
+      "evidence_id": "SUP-ETD-20170706",
+      "archive_id": "stanford_sup_webrecorder",
+      "original_url": "http://enchantingthedesert.com/console/",
+      "capture_url": "https://archive.supdigital.org/enchanting-the-desert.html",
+      "capture_datetime": "2017-07-06T22:36:33Z",
+      "metadata_url": "https://stacks.stanford.edu/file/druid:pj930vw7523/etd.wacz",
+      "archive_metadata": {"package_sha256": "0aa2ffc2c894c8e4ab99021fbe99b583c982adf03f80ee553d992bd61f155210", "layout": "LEGACY_WACZ_LAYOUT", "root_redirect_status": "301", "root_digest": "TNDXUEFJ3JM75I7UXYLVDYLV2FD7NBKW"},
+      "warc_wacz_availability": "DOWNLOADED_LEGACY_WACZ_LAYOUT",
+      "public_access": "AVAILABLE",
+      "local_evidence": "evidence/stanford-etd/",
+      "observation": "The downloaded real archive contains webarchive.yaml, CDXJ and WARC but not current WACZ 1.1.1 datapackage files."
+    }
+  ],
+  "coverage": [
+    {"case_type": "A_same_url_same_representation_different_time", "status": "AVAILABLE", "evidence_ids": ["ARQUIVO-EXAMPLE-20100323"], "scope": "Multiple Arquivo CDX 2010 rows share one digest; only one record is made explicit in this registry."},
+    {"case_type": "B_same_url_changed_content", "status": "AVAILABLE", "evidence_ids": ["IA-EXAMPLE-2010", "IA-EXAMPLE-2024"], "scope": "Visible replay representations differ; raw bytes/fixity were not obtained."},
+    {"case_type": "C_same_url_language_variation", "status": "UNAVAILABLE", "evidence_ids": ["CC-SATURN-20260714"], "scope": "One real content-language=en record exists; no public contrasting same-URL language capture was collected."},
+    {"case_type": "D_same_url_geography_CDN_variation", "status": "UNAVAILABLE", "evidence_ids": ["CC-SATURN-20260714"], "scope": "One response exposes GeoIP and Vary inputs; no contrasting geographic pair was collected."},
+    {"case_type": "E_same_url_User_Agent_Accept_Vary", "status": "PARTIAL", "evidence_ids": ["CC-SATURN-20260714"], "scope": "Real Vary includes User-Agent, Cookie and Authorization; no two captured request contexts are available."},
+    {"case_type": "F_redirect_and_canonical_relation", "status": "PARTIAL", "evidence_ids": ["SUP-ETD-20170706", "CC-SATURN-20260714"], "scope": "Real CDXJ root 301 and a real HTML canonical link are available; no cross-archive relation assertion is present."},
+    {"case_type": "G_query_parameter_difference", "status": "PARTIAL", "evidence_ids": ["IA-CDX-EXAMPLE-URL-VARIANTS"], "scope": "Real CDX output includes query-form URL variant; no semantically matched pair was collected."},
+    {"case_type": "H_fragment_difference", "status": "UNAVAILABLE", "evidence_ids": [], "scope": "No public archived fragment pair was collected."},
+    {"case_type": "I_authenticated_unauthenticated_context", "status": "UNAVAILABLE", "evidence_ids": ["CC-SATURN-20260714"], "scope": "A real Vary: Authorization input exists, but no authenticated archive data was collected."},
+    {"case_type": "J_two_archives_same_URL_different_capture", "status": "AVAILABLE", "evidence_ids": ["ARQUIVO-EXAMPLE-20100323", "IA-EXAMPLE-20100323"], "scope": "Same original URL is independently reported by two archives."},
+    {"case_type": "K_two_archives_near_time_different_bytes", "status": "UNAVAILABLE", "evidence_ids": [], "scope": "The collected cross-archive pair reports the same timestamp; it does not provide a verified different-byte pair."},
+    {"case_type": "L_same_archive_repeated_capture", "status": "AVAILABLE", "evidence_ids": ["ARQUIVO-EXAMPLE-20100323"], "scope": "Real Arquivo CDX query returned multiple 2010 rows with the same digest."},
+    {"case_type": "M_archive_missing_time_range", "status": "UNAVAILABLE", "evidence_ids": [], "scope": "No authority-signed coverage statement or verified absence query was collected; absence is not inferred."},
+    {"case_type": "N_archive_A_imports_archive_B_evidence", "status": "UNAVAILABLE", "evidence_ids": [], "scope": "No public source proved original agency plus importing archive provenance for a case."},
+    {"case_type": "O_transparency_checkpoint_conflict", "status": "UNAVAILABLE", "evidence_ids": [], "scope": "No real archive statement system with a publicly verifiable checkpoint conflict was found or fabricated."}
+  ]
+}

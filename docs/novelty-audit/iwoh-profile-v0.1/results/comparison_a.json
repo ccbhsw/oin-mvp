@@ -1,0 +1,21 @@
+{
+  "profile_version": "IWOH-0.1",
+  "assertion_fields": [
+    "target_identity",
+    "target_relation",
+    "statement_validity",
+    "comparability",
+    "relationship",
+    "history_membership",
+    "completeness_scope",
+    "statement_import_validity",
+    "equivocation_status"
+  ],
+  "result_files": [
+    "results/implementation_a.json"
+  ],
+  "expected_file": "fixtures/expected_results.json",
+  "pass": true,
+  "failure_count": 0,
+  "failures": []
+}

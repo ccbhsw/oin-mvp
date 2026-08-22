@@ -1,0 +1,9 @@
+{
+  "bundle_path": "/home/ubuntu/oin-mission-capability-audit/operators/operator-a/foreign/experimental-operator-b/9fa22e948b923e1576c3e94f",
+  "foreign_issuer": "experimental-operator-b",
+  "importer": "experimental-operator-a",
+  "issuer_preserved": true,
+  "package_sha256": "36d9d5f7b2363a91e2c5e08262a3ca9e8409f0f0c69aee134b2a4d0ceaae59b3",
+  "statement_id": "9fa22e948b923e1576c3e94f",
+  "valid_before_copy": true
+}

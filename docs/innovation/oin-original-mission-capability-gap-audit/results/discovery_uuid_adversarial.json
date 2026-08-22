@@ -1,0 +1,138 @@
+{
+  "distinct_payloads": [
+    "1f9cce384687782ab52b6196586bb2be4d1849c7d58204698487ac7e7ae71abd",
+    "5dfba5f0a1f513d09a431e46f5c5d186485d6d3d5d4c6f676b16a5bb2d6ac337",
+    "70395acdd90e801d6ccb487b7651d99650816443c6c44ff39bdcf84562a32f51"
+  ],
+  "matches": [
+    {
+      "binding_valid": true,
+      "bundle": "/bundles/18ba8294ee293ab7ade941c1/",
+      "captured_at": "2026-08-21T03:39:48Z",
+      "claim_key": null,
+      "evidence_sha256": "0e350ecdd8b519f757cc7d3bcbddcab36c2cd3d019a3314aec3b5a9e2cdd930b",
+      "issuer": "experimental-operator-a",
+      "package_problems": [],
+      "package_valid": true,
+      "payload_sha256": "70395acdd90e801d6ccb487b7651d99650816443c6c44ff39bdcf84562a32f51",
+      "peer": "experimental-operator-a",
+      "signature_valid": true,
+      "statement_id": "18ba8294ee293ab7ade941c1",
+      "statement_sha256": "4b32086fbeb469a06ecf34913fac6c519dac58052fead2fdfe4e7919600eec67",
+      "status": 200,
+      "target": "https://httpbingo.org/uuid",
+      "valid": true,
+      "warc_sha256": "c2cab42499bc752c69ead4397e5f32a5e2eb034b0e9ee05ffefae03716ee2079"
+    },
+    {
+      "binding_valid": true,
+      "bundle": "/bundles/955618e9cec6d86150e3cb6d/",
+      "captured_at": "2026-08-21T03:40:37Z",
+      "claim_key": null,
+      "evidence_sha256": "35578db410b87fbca8e8d6ff097832113a540d8f3d6aeb374f6b3f7b6e4c6882",
+      "issuer": "experimental-operator-b",
+      "package_problems": [],
+      "package_valid": true,
+      "payload_sha256": "1f9cce384687782ab52b6196586bb2be4d1849c7d58204698487ac7e7ae71abd",
+      "peer": "experimental-operator-b",
+      "signature_valid": true,
+      "statement_id": "955618e9cec6d86150e3cb6d",
+      "statement_sha256": "57046888c848e30ac1cc67389e9b83d815e842fa8f0f9597d891293b01eaaf48",
+      "status": 200,
+      "target": "https://httpbingo.org/uuid",
+      "valid": true,
+      "warc_sha256": "54391db0988cebe1539b035fb21ae380690cbf8c6dfbd54a5bc91da3af797903"
+    },
+    {
+      "binding_valid": false,
+      "bundle": "/bundles/invalid-955618e9cec6d86150e3cb6d/",
+      "captured_at": "2026-08-21T03:40:37Z",
+      "claim_key": null,
+      "evidence_sha256": "35578db410b87fbca8e8d6ff097832113a540d8f3d6aeb374f6b3f7b6e4c6882",
+      "issuer": "experimental-operator-b",
+      "package_problems": [],
+      "package_valid": true,
+      "payload_sha256": "1f9cce384687782ab52b6196586bb2be4d1849c7d58204698487ac7e7ae71abd",
+      "peer": "experimental-operator-b",
+      "signature_valid": true,
+      "statement_id": "invalid-955618e9cec6d86150e3cb6d",
+      "statement_sha256": "62fde42abdde6d7758450d45145b099944f37be0fe78d20a3d8fbc3c7c2e078f",
+      "status": 200,
+      "target": "https://httpbingo.org/uuid",
+      "valid": false,
+      "warc_sha256": "54391db0988cebe1539b035fb21ae380690cbf8c6dfbd54a5bc91da3af797903"
+    },
+    {
+      "binding_valid": true,
+      "bundle": "/bundles/conflict-a-955618e9cec6d86150e3cb6d/",
+      "captured_at": "2026-08-21T03:40:37Z",
+      "claim_key": "operator-b-declared-capture-slot-001",
+      "evidence_sha256": "35578db410b87fbca8e8d6ff097832113a540d8f3d6aeb374f6b3f7b6e4c6882",
+      "issuer": "experimental-operator-b",
+      "package_problems": [],
+      "package_valid": true,
+      "payload_sha256": "1f9cce384687782ab52b6196586bb2be4d1849c7d58204698487ac7e7ae71abd",
+      "peer": "experimental-operator-b",
+      "signature_valid": true,
+      "statement_id": "conflict-a-955618e9cec6d86150e3cb6d",
+      "statement_sha256": "5ccba20e4d8ecb143ccf76b9013433bb4e65cd5fd84af9911137e8d39beffa94",
+      "status": 200,
+      "target": "https://httpbingo.org/uuid",
+      "valid": true,
+      "warc_sha256": "54391db0988cebe1539b035fb21ae380690cbf8c6dfbd54a5bc91da3af797903"
+    },
+    {
+      "binding_valid": true,
+      "bundle": "/bundles/3c118d72769904ff7a78f559/",
+      "captured_at": "2026-08-21T03:49:52Z",
+      "claim_key": "operator-b-declared-capture-slot-001",
+      "evidence_sha256": "5fddf47475145d7562300b9246700391a4a8477dc7b40cbd5dd9eb3a3e251b89",
+      "issuer": "experimental-operator-b",
+      "package_problems": [],
+      "package_valid": true,
+      "payload_sha256": "5dfba5f0a1f513d09a431e46f5c5d186485d6d3d5d4c6f676b16a5bb2d6ac337",
+      "peer": "experimental-operator-b",
+      "signature_valid": true,
+      "statement_id": "3c118d72769904ff7a78f559",
+      "statement_sha256": "ef97efeafbd8665501a590b5a1cfc39c8b348783df76286f8143ebb92564b738",
+      "status": 200,
+      "target": "https://httpbingo.org/uuid",
+      "valid": true,
+      "warc_sha256": "7eb34a789a010cfef0889daccbc1950285b74314b9202ad7fa0928698e5b1043"
+    }
+  ],
+  "peer_reports": [
+    {
+      "catalog_valid": true,
+      "entries": 7,
+      "peer": "experimental-operator-a"
+    },
+    {
+      "catalog_valid": true,
+      "entries": 10,
+      "peer": "experimental-operator-b"
+    },
+    {
+      "catalog_valid": true,
+      "entries": 3,
+      "peer": "experimental-operator-c"
+    }
+  ],
+  "same_signer_conflicts": [
+    {
+      "claim_key": "operator-b-declared-capture-slot-001",
+      "distinct_payloads": [
+        "1f9cce384687782ab52b6196586bb2be4d1849c7d58204698487ac7e7ae71abd",
+        "5dfba5f0a1f513d09a431e46f5c5d186485d6d3d5d4c6f676b16a5bb2d6ac337"
+      ],
+      "issuer": "experimental-operator-b",
+      "statement_ids": [
+        "3c118d72769904ff7a78f559",
+        "conflict-a-955618e9cec6d86150e3cb6d"
+      ],
+      "target": "https://httpbingo.org/uuid"
+    }
+  ],
+  "target": "https://httpbingo.org/uuid",
+  "valid_match_count": 4
+}

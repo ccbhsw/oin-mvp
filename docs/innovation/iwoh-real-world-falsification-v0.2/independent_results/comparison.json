@@ -1,0 +1,264 @@
+{
+  "case_count": 7,
+  "exact_serialized_agreement_count": 0,
+  "semantic_compatibility_count": 7,
+  "interpretation": "Different standards-only labels are not naturally interoperable. All reviewed paths remain factually conservative; no case establishes a contradictory historical assertion.",
+  "cases": [
+    {
+      "case_id": "RW-01-ia-same-uri-different-replay",
+      "a_result": {
+        "target": "SAME_LITERAL_TARGET_URI",
+        "representation": "DIFFERENT_REPLAY_BODY_OBSERVED",
+        "time": "ARCHIVE_REPORTED_ORDER_2010_BEFORE_2024",
+        "relation": "NO_STANDARD_CAUSAL_RELATION",
+        "scope": "LOCAL_HOLDINGS_ONLY",
+        "agency": "NOT_STATED_BY_REPLAY",
+        "equivocation": "NO_LOG_EVIDENCE"
+      },
+      "b_result": {
+        "target": "ONE_ORIGINAL_RESOURCE_CANDIDATE_BY_LITERAL_URI",
+        "representation": "TWO_DIFFERENT_MEMENTO_RESPONSES",
+        "time": "MEMENTO_DATETIME_ORDER_2010_BEFORE_2024",
+        "relation": "SEPARATE_ARCHIVE_ASSERTIONS_NO_SIGNED_PROVENANCE",
+        "scope": "ONE_ARCHIVE_KNOWN_HISTORY_ONLY",
+        "agency": "ARCHIVE_SERVICE_REPORTS_ONLY",
+        "equivocation": "NO_TRANSPARENCY_RECEIPTS"
+      },
+      "exact_serialized_agreement": false,
+      "agreement": "SEMANTICALLY_COMPATIBLE_CONSERVATISM",
+      "factual_projection": "same literal URI; different replay bodies; archive-reported 2010-before-2024; no causal proof",
+      "reason": "A uses literal resource language while B uses Memento/PROV candidate language; both reject a source-causality claim.",
+      "a_standard_used": [
+        "RFC 9110",
+        "RFC 7089"
+      ],
+      "b_standard_used": [
+        "RFC 7089",
+        "PROV-DM",
+        "VC 2.0"
+      ]
+    },
+    {
+      "case_id": "RW-02-arquivo-same-digest-multiple-records",
+      "a_result": {
+        "target": "SAME_LITERAL_TARGET_URI",
+        "representation": "SAME_REPORTED_CDX_DIGEST",
+        "time": "MULTIPLE_ARCHIVE_REPORTED_TIMES",
+        "relation": "MULTIPLE_INDEX_RECORDS_NO_CAUSAL_LABEL",
+        "scope": "LOCAL_INDEX_QUERY_ONLY",
+        "agency": "NOT_STATED_BY_CDX",
+        "equivocation": "NO_LOG_EVIDENCE"
+      },
+      "b_result": {
+        "target": "ONE_ORIGINAL_RESOURCE_CANDIDATE_BY_LITERAL_URI",
+        "representation": "SAME_DIGEST_ARTIFACT_CLAIM",
+        "time": "MULTIPLE_DECLARED_CAPTURE_TIMES",
+        "relation": "POTENTIAL_DUPLICATE_EVIDENCE_NO_PROVENANCE_ACTIVITY",
+        "scope": "ONE_ARCHIVE_QUERY_SCOPE",
+        "agency": "ARCHIVE_INDEX_ISSUER_UNSPECIFIED",
+        "equivocation": "NO_TRANSPARENCY_RECEIPTS"
+      },
+      "exact_serialized_agreement": false,
+      "agreement": "SEMANTICALLY_COMPATIBLE_CONSERVATISM",
+      "factual_projection": "one literal URI; repeated index rows; same reported digest; no capture-activity provenance",
+      "reason": "A declines a causal label and B labels a potential duplicate evidence artifact; neither claims a repeated observation fact.",
+      "a_standard_used": [
+        "WARC 1.1",
+        "CDX Server API"
+      ],
+      "b_standard_used": [
+        "PROV-DM",
+        "WARC 1.1",
+        "Arquivo.pt CDX API"
+      ]
+    },
+    {
+      "case_id": "RW-03-two-archives-same-uri-same-datetime",
+      "a_result": {
+        "target": "SAME_LITERAL_TARGET_URI",
+        "representation": "UNVERIFIED_ACROSS_ARCHIVES",
+        "time": "EQUAL_REPORTED_DATETIME",
+        "relation": "NO_STANDARD_COMMON_EVENT_INFERENCE",
+        "scope": "TWO_LOCAL_HOLDINGS",
+        "agency": "NO_TRANSFER_EVIDENCE",
+        "equivocation": "NO_LOG_EVIDENCE"
+      },
+      "b_result": {
+        "target": "ONE_ORIGINAL_RESOURCE_CANDIDATE_BY_LITERAL_URI",
+        "representation": "TWO_UNATTESTED_ARCHIVE_ARTIFACT_REFERENCES",
+        "time": "SAME_DECLARED_DATETIME_NO_COMMON_CLOCK_PROOF",
+        "relation": "NO_PROV_COMMUNICATION_OR_DERIVATION_ASSERTED",
+        "scope": "TWO_SEPARATE_ARCHIVE_SCOPES",
+        "agency": "TWO_ARCHIVE_SERVICES_NO_DELEGATION_PROOF",
+        "equivocation": "NO_TRANSPARENCY_RECEIPTS"
+      },
+      "exact_serialized_agreement": false,
+      "agreement": "SEMANTICALLY_COMPATIBLE_CONSERVATISM",
+      "factual_projection": "same literal URI; equal declared datetime; two archive services; no transfer or common-event proof",
+      "reason": "Both paths reject an inference that equal timestamp proves the same capture event or a causal relation.",
+      "a_standard_used": [
+        "RFC 7089",
+        "Internet Archive Availability API",
+        "Arquivo.pt CDX API"
+      ],
+      "b_standard_used": [
+        "PROV-DM",
+        "VC 2.0",
+        "RFC 7089"
+      ]
+    },
+    {
+      "case_id": "RW-04-commoncrawl-vary-context",
+      "a_result": {
+        "target": "ONE_LITERAL_TARGET_URI",
+        "representation": "ONE_RECORDED_RESPONSE",
+        "time": "ONE_WARC_DATE",
+        "relation": "NO_PAIR_TO_CLASSIFY",
+        "scope": "ONE_WARC_RECORD",
+        "agency": "CRAWLER_FACTS_ONLY",
+        "equivocation": "NO_LOG_EVIDENCE",
+        "selection_inputs": [
+          "content-language",
+          "Vary",
+          "Cookie",
+          "Authorization",
+          "User-Agent",
+          "GeoIP"
+        ]
+      },
+      "b_result": {
+        "target": "ONE_REFERENCED_RESOURCE",
+        "representation": "ONE_CONTEXTUALIZED_RESPONSE_ENTITY",
+        "time": "ONE_WARC_CAPTURE_BEGIN_TIME",
+        "relation": "NO_SECOND_ENTITY_FOR_DERIVATION_OR_COMPARISON",
+        "scope": "ONE_WARC_RECORD",
+        "agency": "CRAWLER_ACTIVITY_IMPLIED_NOT_ATTESTED",
+        "equivocation": "NO_TRANSPARENCY_RECEIPTS",
+        "recorded_context": [
+          "content-language",
+          "Vary",
+          "Cookie",
+          "Authorization",
+          "User-Agent",
+          "GeoIP"
+        ]
+      },
+      "exact_serialized_agreement": false,
+      "agreement": "SEMANTICALLY_COMPATIBLE_CONSERVATISM",
+      "factual_projection": "one WARC response; selection context recorded; no second contextually matched response",
+      "reason": "Both paths retain Vary/context inputs and decline a pairwise comparison result.",
+      "a_standard_used": [
+        "RFC 9110",
+        "WARC 1.1"
+      ],
+      "b_standard_used": [
+        "WARC 1.1",
+        "RFC 9110",
+        "PROV-DM"
+      ]
+    },
+    {
+      "case_id": "RW-05-legacy-wacz-redirect-canonical",
+      "a_result": {
+        "target": "LITERAL_URIS_REMAIN_DISTINCT",
+        "representation": "REDIRECT_OR_CANONICAL_EVIDENCE_RECORDED",
+        "time": "ARCHIVE_LOCAL_CAPTURE_TIME",
+        "relation": "NO_TARGET_MERGE_BY_FORMAT",
+        "scope": "ONE_PACKAGE_COLLECTION",
+        "agency": "PACKAGE_CONTEXT_ONLY",
+        "equivocation": "NO_LOG_EVIDENCE"
+      },
+      "b_result": {
+        "target": "TWO_REFERENCES_WITH_TYPED_WEB_LINK_EVIDENCE",
+        "representation": "PACKAGE_LOCAL_ARCHIVE_ENTITIES",
+        "time": "PACKAGE_LOCAL_CAPTURE_TIME",
+        "relation": "NO_PROV_SPECIALIZATION_OR_EQUIVALENCE_ASSERTED",
+        "scope": "ONE_COLLECTION_DESCRIPTION",
+        "agency": "COLLECTION_CONTEXT_NOT_SIGNED_PROVENANCE",
+        "equivocation": "NO_TRANSPARENCY_RECEIPTS"
+      },
+      "exact_serialized_agreement": false,
+      "agreement": "SEMANTICALLY_COMPATIBLE_CONSERVATISM",
+      "factual_projection": "typed redirect/canonical evidence exists; no cross-archive equivalence assertion",
+      "reason": "Both paths keep target references distinct rather than silently merge them.",
+      "a_standard_used": [
+        "RFC 9110",
+        "WARC 1.1",
+        "WACZ 1.1.1"
+      ],
+      "b_standard_used": [
+        "RFC 9110",
+        "PROV-DM",
+        "WACZ 1.1.1"
+      ]
+    },
+    {
+      "case_id": "RW-06-ukwa-query-blocked",
+      "a_result": {
+        "target": "NO_CAPTURE_RESULT",
+        "representation": "NO_CAPTURE_RESULT",
+        "time": "NO_CAPTURE_RESULT",
+        "relation": "UNAVAILABLE_FOR_AUTOMATED_COLLECTION",
+        "scope": "NO_SCOPE_ASSERTION",
+        "agency": "NO_CAPTURE_RESULT",
+        "equivocation": "NO_CAPTURE_RESULT"
+      },
+      "b_result": {
+        "target": "NO_ENTITY_RETRIEVED",
+        "representation": "NO_ENTITY_RETRIEVED",
+        "time": "NO_ENTITY_RETRIEVED",
+        "relation": "ACCESS_CHALLENGE_NOT_PROVENANCE",
+        "scope": "UNDECLARED",
+        "agency": "NO_ASSERTION_RETRIEVED",
+        "equivocation": "NO_ASSERTION_RETRIEVED"
+      },
+      "exact_serialized_agreement": false,
+      "agreement": "SEMANTICALLY_COMPATIBLE_CONSERVATISM",
+      "factual_projection": "human verification blocked automated capture query; no scope/capture result",
+      "reason": "Both paths reject an absence inference from blocked access.",
+      "a_standard_used": [
+        "Observed public access result"
+      ],
+      "b_standard_used": [
+        "Observed public access result"
+      ]
+    },
+    {
+      "case_id": "RW-07-import-and-checkpoint",
+      "a_result": {
+        "target": "NO_CASE_EVIDENCE",
+        "representation": "NO_CASE_EVIDENCE",
+        "time": "NO_CASE_EVIDENCE",
+        "relation": "NO_CASE_EVIDENCE",
+        "scope": "NO_CASE_EVIDENCE",
+        "agency": "NO_PROVENANCE_TRANSFER",
+        "equivocation": "NO_SIGNED_TREE_HEAD_PAIR"
+      },
+      "b_result": {
+        "target": "NO_CASE_EVIDENCE",
+        "representation": "NO_CASE_EVIDENCE",
+        "time": "NO_CASE_EVIDENCE",
+        "relation": "NO_TRANSFER_ACTIVITY_OR_RECEIPT",
+        "scope": "NO_CASE_EVIDENCE",
+        "agency": "NO_DELEGATION_OR_ATTRIBUTION_EVIDENCE",
+        "equivocation": "NO_SAME_LOG_CHECKPOINT_PAIR"
+      },
+      "exact_serialized_agreement": false,
+      "agreement": "SEMANTICALLY_COMPATIBLE_CONSERVATISM",
+      "factual_projection": "no import transfer proof and no same-log signed checkpoint pair",
+      "reason": "Both paths retain missing evidence rather than manufacture agency or equivocation results.",
+      "a_standard_used": [
+        "PROV-DM",
+        "VC 2.0",
+        "RFC 9943",
+        "RFC 9162"
+      ],
+      "b_standard_used": [
+        "PROV-DM",
+        "VC 2.0",
+        "RFC 9943",
+        "RFC 9162"
+      ]
+    }
+  ]
+}

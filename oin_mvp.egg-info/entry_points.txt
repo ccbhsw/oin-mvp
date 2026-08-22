@@ -1,0 +1,2 @@
+[console_scripts]
+oin = oin.cli:app

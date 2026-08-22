@@ -1,0 +1,33 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://example.test/iwhoh/v1"
+  ],
+  "id": "https://receipts.example.test/parallel-b",
+  "type": [
+    "VerifiableCredential",
+    "WebObservationSequenceReceipt"
+  ],
+  "profile_version": "IWOH-0.1",
+  "issuer": "https://sequence-parallel-b.example.test",
+  "statement_id": "https://statements.example.test/parallel-b",
+  "log_id": "parallel-log-b",
+  "ordinal": 9,
+  "interval": {
+    "not_before": "2026-02-10T00:03:00Z",
+    "not_after": "2026-02-10T00:08:00Z"
+  },
+  "predecessor_statement_ids": [],
+  "proof": {
+    "type": "DataIntegrityProof",
+    "cryptosuite": "eddsa-jcs-2022",
+    "created": "2026-08-21T00:00:00Z",
+    "verificationMethod": "https://sequence-parallel-b.example.test#key-1",
+    "proofPurpose": "assertionMethod",
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://example.test/iwhoh/v1"
+    ],
+    "proofValue": "z42BayaKTsHnS3jQAVfkuf6KXRuaYBWLQjEyHVDfnYkVr8phNFqrQvfvyvzrS7z4cPWvKAqr4bft9DJvJ8geHDSy"
+  }
+}

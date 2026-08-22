@@ -1,0 +1,39 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://example.test/iwhoh/v1"
+  ],
+  "id": "https://history.example.test/partial-history",
+  "type": [
+    "VerifiableCredential",
+    "WebObservationHistoryView"
+  ],
+  "profile_version": "IWOH-0.1",
+  "issuer": "https://history-archive.example.test",
+  "history_scope": "ARCHIVE_LOCAL",
+  "coverage": {
+    "target_relation_policy": "exact-request-target-only",
+    "time_interval": {
+      "from": "2026-01-01T00:00:00Z",
+      "until": "2026-12-31T23:59:59Z"
+    },
+    "ingestion_policy": "signed-statements-only"
+  },
+  "completeness": "PARTIAL",
+  "scope_evidence": "fixture:partial-history",
+  "statement_ids": [
+    "https://statements.example.test/repeated-a"
+  ],
+  "proof": {
+    "type": "DataIntegrityProof",
+    "cryptosuite": "eddsa-jcs-2022",
+    "created": "2026-08-21T00:00:00Z",
+    "verificationMethod": "https://history-archive.example.test#key-1",
+    "proofPurpose": "assertionMethod",
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://example.test/iwhoh/v1"
+    ],
+    "proofValue": "z5GeXDFmBd2dsR1CoAnt2UVFzmYvj3j23ijifQSK5zpmcJ26tmD1MLPHbERecnqDjZt8TdNSBbk3c6ZGaC5x82dsj"
+  }
+}

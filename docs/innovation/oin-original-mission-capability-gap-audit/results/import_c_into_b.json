@@ -1,0 +1,7 @@
+{
+  "importer": "experimental-operator-b",
+  "foreign_issuer": "experimental-operator-c",
+  "statement_id": "171e3c11fd97b14c191be6e6",
+  "issuer_preserved": true,
+  "package_sha256": "06c60d9443805ea893f219eeab84a44746a5d89583bb8bc9e612cad6451240cb"
+}

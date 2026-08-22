@@ -1,0 +1,70 @@
+{
+  "registry_version": "mission-network-real-targets-0.1",
+  "retrieved_on": "2026-08-21",
+  "targets": [
+    {
+      "case_id": "T01-unchanged",
+      "url": "https://example.com/",
+      "request_headers": {"Accept-Language": "en-US,en;q=0.9", "User-Agent": "MissionAudit-A/1.0"},
+      "expectation": "Public reserved-domain page; repeated captures are expected to have stable body bytes during this experiment but equality will be verified, not assumed.",
+      "claim_boundary": "Same body digest proves repeated bytes only, not source truth or global stability."
+    },
+    {
+      "case_id": "T02-changed",
+      "url": "https://httpbingo.org/uuid",
+      "request_headers": {"Accept-Language": "en-US,en;q=0.9", "User-Agent": "MissionAudit-A/1.0"},
+      "expectation": "Public endpoint returns a UUID; repeated captures of the same URL are expected to differ.",
+      "claim_boundary": "Difference is an observed HTTP response difference, not a claim about a persistent source state."
+    },
+    {
+      "case_id": "T03-redirect",
+      "url": "https://httpbingo.org/redirect-to?url=https%3A%2F%2Fexample.com%2F",
+      "request_headers": {"Accept-Language": "en-US,en;q=0.9", "User-Agent": "MissionAudit-A/1.0"},
+      "expectation": "Public endpoint returns an HTTP redirect to example.com; redirect evidence must be retained without merging target keys.",
+      "claim_boundary": "Location header is typed relation evidence, not an automatic identity merge."
+    },
+    {
+      "case_id": "T04-canonical",
+      "url": "https://en.wikipedia.org/wiki/Saturn",
+      "request_headers": {"Accept-Language": "en-US,en;q=0.9", "User-Agent": "MissionAudit-A/1.0"},
+      "expectation": "Public article normally exposes a canonical HTML link; the experiment records actual link evidence only if present.",
+      "claim_boundary": "Canonical relation evidence does not automatically merge distinct request targets."
+    },
+    {
+      "case_id": "T05-language-header-variation",
+      "url": "https://httpbingo.org/headers",
+      "request_headers": {"Accept-Language": "en-US,en;q=0.9", "User-Agent": "MissionAudit-A/1.0"},
+      "alternate_request_headers": {"Accept-Language": "fr-FR,fr;q=0.9", "User-Agent": "MissionAudit-B/1.0"},
+      "expectation": "Public echo endpoint records actual request header differences for the same URL.",
+      "claim_boundary": "This is verified request-header variation, not evidence that a localized origin representation exists."
+    },
+    {
+      "case_id": "T06-query-variation-alpha",
+      "url": "https://httpbingo.org/anything?ref=alpha",
+      "request_headers": {"Accept-Language": "en-US,en;q=0.9", "User-Agent": "MissionAudit-A/1.0"},
+      "expectation": "Public endpoint provides a distinct query URI.",
+      "claim_boundary": "Query is retained as part of request target; no automatic semantic coalescing."
+    },
+    {
+      "case_id": "T07-query-variation-beta",
+      "url": "https://httpbingo.org/anything?ref=beta",
+      "request_headers": {"Accept-Language": "en-US,en;q=0.9", "User-Agent": "MissionAudit-B/1.0"},
+      "expectation": "Public endpoint provides a distinct query URI.",
+      "claim_boundary": "Query is retained as part of request target; no automatic semantic coalescing."
+    },
+    {
+      "case_id": "T08-http-failure",
+      "url": "https://httpbingo.org/status/503",
+      "request_headers": {"Accept-Language": "en-US,en;q=0.9", "User-Agent": "MissionAudit-C/1.0"},
+      "expectation": "Public endpoint returns a server-error response; capture preserves status and headers without declaring a missing history.",
+      "claim_boundary": "A captured 503 is an observed response, not a claim that target or archive history is absent."
+    },
+    {
+      "case_id": "T09-cdn-geo",
+      "url": "https://httpbingo.org/ip",
+      "request_headers": {"Accept-Language": "en-US,en;q=0.9", "User-Agent": "MissionAudit-A/1.0"},
+      "expectation": "Public endpoint returns request egress information.",
+      "claim_boundary": "All experimental operators share one sandbox egress; genuine independent CDN/geography variation is unavailable in this environment."
+    }
+  ]
+}

@@ -1,13 +1,33 @@
+Metadata-Version: 2.4
+Name: oin-mvp
+Version: 0.1.0
+Summary: Open Information Network MVP: signed, replicable public observations
+Author: OIN Contributors
+License: Apache-2.0
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: cryptography>=42.0
+Requires-Dist: fastapi>=0.115
+Requires-Dist: httpx>=0.27
+Requires-Dist: pydantic>=2.7
+Requires-Dist: python-multipart>=0.0.9
+Requires-Dist: sqlalchemy>=2.0
+Requires-Dist: typer>=0.12
+Requires-Dist: uvicorn[standard]>=0.30
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.23; extra == "dev"
+Requires-Dist: ruff>=0.6; extra == "dev"
+Provides-Extra: postgres
+Requires-Dist: psycopg[binary]>=3.1; extra == "postgres"
+Provides-Extra: s3
+Requires-Dist: boto3>=1.34; extra == "s3"
+
 # OIN MVP
 
 OIN MVP 是一个**签名、可复制、冲突保留**的公共信息 Observation 网络原型。它记录“哪个 Observer 在何时观察到什么”，而不对网页内容本身作真假判定。
 
 > 此仓库的第一闭环是：公共 URL → HTTP 捕获 → WARC/WACZ → SHA-256 → Ed25519 签名 → Merkle 透明日志 → 多节点复制 → 冲突保留 → API 发现 → 离线验证。
-
-## 当前状态与已知限制
-1. **时间戳新鲜度校验缺失**：当前协议对内部自洽的重签名 + 新时间戳无拦截能力，计划后续引入 RFC 3161 可信时间戳机制。
-2. **验证器异构性独立性待完全闭合**：Node.js 验证器由同一执行上下文参考 Python 源码实现，待后续由独立执行者复现确认。
-3. **历史测试结论修正**：原全链路测试报告中第 5 步 (REPLICATE / VERIFY) 的 PASS 结论已撤回。日志显示当时未调用验证接口，PASS 仅代表数据同步。
 
 ## 先从安全 Demo 开始
 
@@ -33,9 +53,7 @@ OIN MVP 是一个**签名、可复制、冲突保留**的公共信息 Observatio
 cd oin-mvp
 python3 -m venv .venv
 . .venv/bin/activate
-python -m pip install --require-hashes -r requirements-build.lock
-python -m pip install --require-hashes -r requirements-dev.lock
-python -m pip install --no-deps --no-build-isolation -e .
+pip install -e '.[dev]'
 
 # 初始化一个 Observer 身份
 oin keys-init ./data/keys
@@ -80,7 +98,7 @@ curl -X POST http://localhost:8003/v1/replication/pull \
 
 安全策略、审计范围、已修复问题和残余风险见 [SECURITY.md](SECURITY.md) 与 [SECURITY_AUDIT.md](SECURITY_AUDIT.md)。最小隔离运行步骤见 [SAFE_DEMO.md](SAFE_DEMO.md)。默认 API 没有认证或限流；不要直接将其暴露到公网。
 
-完整工程与协议设计见 [docs/OIN_MVP_Engineering_Design.md](docs/OIN_MVP_Engineering_Design.md)。部署、独立性、密钥轮换、威胁模型与验收步骤见 [docs/Deployment_and_Operations.md](docs/Deployment_and_Operations.md)。签名描述符与可替换 Bootstrap 发现原型的配置、边界和验证方式见 [docs/architecture/discovery-bootstrap-api.md](docs/architecture/discovery-bootstrap-api.md)。受哈希锁定的依赖安装、更新和审查流程见 [docs/security/dependency-locking.md](docs/security/dependency-locking.md)。
+完整工程与协议设计见 [docs/OIN_MVP_Engineering_Design.md](docs/OIN_MVP_Engineering_Design.md)。部署、独立性、密钥轮换、威胁模型与验收步骤见 [docs/Deployment_and_Operations.md](docs/Deployment_and_Operations.md)。
 
 第二阶段生产化前验证的审计、节点独立性、故障恢复、安全、离线验证、性能、连续运行与验收证据位于 [docs/operations/](docs/operations/)。当前结论是 **PARTIAL PASS**：协议闭环已通过本地隔离节点验证，但尚未完成 7 天、跨宿主的长期运行验证；详见 [production-validation-report.md](docs/operations/production-validation-report.md)。
 
@@ -98,8 +116,6 @@ curl -X POST http://localhost:8003/v1/replication/pull \
 | `GET /v1/observations/{id}/proof` | 获取透明日志包含证明 |
 | `POST /v1/replication/pull` | 从同伴节点差集拉取并独立验证 |
 | `GET /v1/verify/{id}` | 便利的节点侧验证；不替代离线 verifier |
-| `GET /v1/discovery/descriptor` | 公开本节点经 Ed25519 签名、短期有效的 Operator Descriptor；需显式配置公开端点。 |
-| `GET /v1/discovery/peers` | 返回本节点与本地 Bootstrap Bundle 中通过验签、未过期的候选 Operator；不自动复制。 |
 
 ## 开发检查
 

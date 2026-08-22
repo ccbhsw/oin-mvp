@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oin.network/schemas/observation/0.1.0.json",
+  "title": "OIN Observation Manifest",
+  "description": "The signed core statement made by one OIN Observer about one public-information object.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version", "observation_id", "object", "observer", "capture", "content", "provenance", "signature"
+  ],
+  "properties": {
+    "protocol_version": {"const": "oin/0.1"},
+    "observation_id": {"type": "string", "pattern": "^oin:observation:sha256:[a-f0-9]{64}$"},
+    "object": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["object_id", "canonical_url", "observed_url", "resource_type"],
+      "properties": {
+        "object_id": {"type": "string", "pattern": "^oin:object:sha256:[a-f0-9]{64}$"},
+        "canonical_url": {"type": "string", "format": "uri"},
+        "observed_url": {"type": "string", "format": "uri"},
+        "original_url": {"type": "string", "format": "uri"},
+        "resource_type": {"enum": ["html", "document", "feed", "other"]},
+        "semantic_identifiers": {"type": "object", "additionalProperties": {"type": "string"}}
+      }
+    },
+    "observer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observer_id", "public_key", "key_algorithm"],
+      "properties": {
+        "observer_id": {"type": "string", "pattern": "^oin:observer:sha256:[a-f0-9]{64}$"},
+        "public_key": {"type": "string", "contentEncoding": "base64"},
+        "key_algorithm": {"const": "Ed25519"},
+        "key_id": {"type": "string"}
+      }
+    },
+    "capture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["captured_at", "capture_method", "capture_software", "capture_software_version", "http_status", "http_headers"],
+      "properties": {
+        "captured_at": {"type": "string", "format": "date-time"},
+        "capture_method": {"enum": ["http-get", "browsertrix", "playwright"]},
+        "capture_software": {"type": "string"},
+        "capture_software_version": {"type": "string"},
+        "http_status": {"type": "integer", "minimum": 100, "maximum": 599},
+        "http_headers": {"type": "object", "additionalProperties": {"type": "string"}},
+        "redirect_chain": {"type": "array", "items": {"type": "string", "format": "uri"}}
+      }
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["archive_format", "archive_media_type", "raw_content_hash", "raw_content_bytes", "raw_content_reference", "archive_hash", "archive_bytes", "archive_reference"],
+      "properties": {
+        "archive_format": {"enum": ["warc", "wacz"]},
+        "archive_media_type": {"type": "string"},
+        "raw_content_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "raw_content_bytes": {"type": "integer", "minimum": 0},
+        "raw_content_reference": {"type": "string", "pattern": "^warc:response-payload(:[0-9]+)?$"},
+        "archive_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "archive_bytes": {"type": "integer", "minimum": 0},
+        "archive_reference": {"type": "string", "pattern": "^urn:oin:artifact:sha256:[a-f0-9]{64}$"},
+        "normalized_html_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+      }
+    },
+    "provenance": {"type": "object", "additionalProperties": true},
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "signed_fields", "value"],
+      "properties": {
+        "algorithm": {"const": "Ed25519"},
+        "signed_fields": {"const": "all-fields-except-signature"},
+        "value": {"type": "string", "contentEncoding": "base64"}
+      }
+    }
+  }
+}

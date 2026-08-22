@@ -1,0 +1,85 @@
+{
+  "profile_version": "IWOH-0.1",
+  "verification_methods": [
+    {
+      "id": "https://observer-a.example.test#key-1",
+      "controller": "https://observer-a.example.test",
+      "type": "Multikey",
+      "publicKeyMultibase": "z6Mkp57VYoNNQfL8vb2QCQRpYWj9ciTATLHUZoXJQ1XJWSKt",
+      "purposes": [
+        "assertionMethod"
+      ],
+      "fixture_label": "observer-a"
+    },
+    {
+      "id": "https://observer-b.example.test#key-1",
+      "controller": "https://observer-b.example.test",
+      "type": "Multikey",
+      "publicKeyMultibase": "z6MkmDtUUDa8Pg2CQMkzgbfK9ioKbaZ42Jk6TyvmrkTUB2HG",
+      "purposes": [
+        "assertionMethod"
+      ],
+      "fixture_label": "observer-b"
+    },
+    {
+      "id": "https://observer-c.example.test#key-1",
+      "controller": "https://observer-c.example.test",
+      "type": "Multikey",
+      "publicKeyMultibase": "z6Mkk3t2Le1WXFZLomHn99XvbA2pQLSDQSXZyiSkwRV884yX",
+      "purposes": [
+        "assertionMethod"
+      ],
+      "fixture_label": "observer-c"
+    },
+    {
+      "id": "https://sequence-primary.example.test#key-1",
+      "controller": "https://sequence-primary.example.test",
+      "type": "Multikey",
+      "publicKeyMultibase": "z6MkjnuQii7bPGqqwvtnmKougmWpPcuW7rbmmseCdKf15UKZ",
+      "purposes": [
+        "assertionMethod"
+      ],
+      "fixture_label": "sequence-primary"
+    },
+    {
+      "id": "https://sequence-parallel-a.example.test#key-1",
+      "controller": "https://sequence-parallel-a.example.test",
+      "type": "Multikey",
+      "publicKeyMultibase": "z6MkhHCPMfzmVKPVFY9ierfa8sRRFii68mLiQFVMj3oBPsz8",
+      "purposes": [
+        "assertionMethod"
+      ],
+      "fixture_label": "sequence-parallel-a"
+    },
+    {
+      "id": "https://sequence-parallel-b.example.test#key-1",
+      "controller": "https://sequence-parallel-b.example.test",
+      "type": "Multikey",
+      "publicKeyMultibase": "z6MktqT64SeF3igxzuKq5pMAeRsBjX8zyt9krfQvEWDe8Rkj",
+      "purposes": [
+        "assertionMethod"
+      ],
+      "fixture_label": "sequence-parallel-b"
+    },
+    {
+      "id": "https://history-archive.example.test#key-1",
+      "controller": "https://history-archive.example.test",
+      "type": "Multikey",
+      "publicKeyMultibase": "z6Mktd8ospuBgfdCSCtbkvmF38oEiUAukHn5VbTmWpJUKDVn",
+      "purposes": [
+        "assertionMethod"
+      ],
+      "fixture_label": "history-archive"
+    },
+    {
+      "id": "https://transparency-log.example.test#key-1",
+      "controller": "https://transparency-log.example.test",
+      "type": "Multikey",
+      "publicKeyMultibase": "z6MknmfkFLNFRvJRCLjavPDPgYHU9qgWnRnEtauu4J8UmyGG",
+      "purposes": [
+        "assertionMethod"
+      ],
+      "fixture_label": "transparency-log"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+.pem
+.key
+.env
+config.local.*
+operator_*.pem
+test_*.pem
+*.bash_history
+venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/

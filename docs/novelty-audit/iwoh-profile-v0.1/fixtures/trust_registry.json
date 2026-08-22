@@ -1,0 +1,22 @@
+{
+  "profile_version": "IWOH-0.1",
+  "trusted_assertion_method_controllers": [
+    "https://observer-a.example.test",
+    "https://observer-b.example.test",
+    "https://observer-c.example.test",
+    "https://sequence-primary.example.test",
+    "https://sequence-parallel-a.example.test",
+    "https://sequence-parallel-b.example.test",
+    "https://history-archive.example.test",
+    "https://transparency-log.example.test"
+  ],
+  "trusted_time_receipt_issuers": [
+    "https://sequence-primary.example.test",
+    "https://sequence-parallel-a.example.test",
+    "https://sequence-parallel-b.example.test"
+  ],
+  "trusted_history_issuers": [
+    "https://history-archive.example.test",
+    "https://transparency-log.example.test"
+  ]
+}

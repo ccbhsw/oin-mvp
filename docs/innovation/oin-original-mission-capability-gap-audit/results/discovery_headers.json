@@ -1,0 +1,61 @@
+{
+  "distinct_payloads": [
+    "32ccba985642503265ab4f0de25cb1e7a6ed4d000edb17a0a58d1f091e91840b",
+    "f8eda452b21cbe0b2ac70a9772afc79ccc52960f0adbec605559e594e2ed2950"
+  ],
+  "matches": [
+    {
+      "binding_valid": true,
+      "bundle": "/bundles/f3ce5f4dbf3fc4d1a184059c/",
+      "captured_at": "2026-08-21T03:39:55Z",
+      "evidence_sha256": "00e33c84c0776cb568037f2e28252d3e802885813004c536c33029202812f1c4",
+      "issuer": "experimental-operator-a",
+      "package_problems": [],
+      "package_valid": true,
+      "payload_sha256": "f8eda452b21cbe0b2ac70a9772afc79ccc52960f0adbec605559e594e2ed2950",
+      "peer": "experimental-operator-a",
+      "signature_valid": true,
+      "statement_id": "f3ce5f4dbf3fc4d1a184059c",
+      "statement_sha256": "3f3295c2caec35f346f801e0daea81faf6abe91798c2c5e2c71d682a930f6f02",
+      "status": 200,
+      "target": "https://httpbingo.org/headers",
+      "valid": true
+    },
+    {
+      "binding_valid": true,
+      "bundle": "/bundles/712d91e98cfb48e5b42f9aeb/",
+      "captured_at": "2026-08-21T03:40:41Z",
+      "evidence_sha256": "a8b53d11af970e8749d93f5c4ae7748ba288304248dc49ab4a64f61751cfaf9c",
+      "issuer": "experimental-operator-b",
+      "package_problems": [],
+      "package_valid": true,
+      "payload_sha256": "32ccba985642503265ab4f0de25cb1e7a6ed4d000edb17a0a58d1f091e91840b",
+      "peer": "experimental-operator-b",
+      "signature_valid": true,
+      "statement_id": "712d91e98cfb48e5b42f9aeb",
+      "statement_sha256": "572c53142080a4fb493cee6ce7a8da7f1366dec533e3710153d13aaedf048635",
+      "status": 200,
+      "target": "https://httpbingo.org/headers",
+      "valid": true
+    }
+  ],
+  "peer_reports": [
+    {
+      "catalog_valid": true,
+      "entries": 6,
+      "peer": "experimental-operator-a"
+    },
+    {
+      "catalog_valid": true,
+      "entries": 6,
+      "peer": "experimental-operator-b"
+    },
+    {
+      "catalog_valid": true,
+      "entries": 2,
+      "peer": "experimental-operator-c"
+    }
+  ],
+  "target": "https://httpbingo.org/headers",
+  "valid_match_count": 2
+}

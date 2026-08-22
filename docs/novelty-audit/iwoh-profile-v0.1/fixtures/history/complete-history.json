@@ -1,0 +1,45 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://example.test/iwhoh/v1"
+  ],
+  "id": "https://history.example.test/complete-history",
+  "type": [
+    "VerifiableCredential",
+    "WebObservationHistoryView"
+  ],
+  "profile_version": "IWOH-0.1",
+  "issuer": "https://transparency-log.example.test",
+  "history_scope": "TRANSPARENCY_LOG",
+  "coverage": {
+    "target_relation_policy": "exact-request-target-only",
+    "time_interval": {
+      "from": "2026-01-01T00:00:00Z",
+      "until": "2026-12-31T23:59:59Z"
+    },
+    "ingestion_policy": "signed-statements-only"
+  },
+  "completeness": "COMPLETE_FOR_DECLARED_SCOPE",
+  "scope_evidence": "fixture:complete-history",
+  "statement_ids": [
+    "https://statements.example.test/repeated-a",
+    "https://statements.example.test/repeated-b"
+  ],
+  "checkpoint": {
+    "log_id": "fixture-history-log",
+    "tree_size": 12,
+    "root_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "proof": {
+    "type": "DataIntegrityProof",
+    "cryptosuite": "eddsa-jcs-2022",
+    "created": "2026-08-21T00:00:00Z",
+    "verificationMethod": "https://transparency-log.example.test#key-1",
+    "proofPurpose": "assertionMethod",
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://example.test/iwhoh/v1"
+    ],
+    "proofValue": "z4eXawvmLYLZzg8JLRjwkz5wdvCPGkjfsH9owWRgxChuXngeZS1WKsrNFGTGLotYpQVhKiqYCos55h5nYvdEw6nqL"
+  }
+}

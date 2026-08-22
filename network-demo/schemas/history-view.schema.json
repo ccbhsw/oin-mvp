@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oin.example/schemas/history-view.schema.json",
+  "title": "OIN Local Demo History View",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["query_time", "target", "declared_scope", "scope_results", "status", "statements"],
+  "properties": {
+    "query_time": {"type": "string", "format": "date-time"},
+    "target": {"type": "string", "format": "uri"},
+    "declared_scope": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "scope_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["operator", "status"],
+        "properties": {
+          "operator": {"type": "string"},
+          "status": {"enum": ["QUERIED", "UNAVAILABLE_OPERATOR", "NOT_FOUND"]},
+          "detail": {"type": "string"}
+        }
+      }
+    },
+    "status": {"enum": ["VERIFIED", "CONFLICT", "NO_MATCH_IN_DECLARED_SCOPE", "PARTIAL_SCOPE", "UNAVAILABLE_OPERATOR"]},
+    "statements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["observation_id", "issuer", "capture_time", "artifact_digest", "verification_status", "custody"],
+        "properties": {
+          "observation_id": {"type": "string"},
+          "issuer": {"type": "string"},
+          "capture_time": {"type": "string", "format": "date-time"},
+          "artifact_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+          "verification_status": {"enum": ["VERIFIED", "INVALID_SIGNATURE", "INVALID_BINDING", "MALFORMED_ARTIFACT", "MISSING_REPLICA"]},
+          "evidence_reference": {"type": "string"},
+          "custody": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["operator", "original_issuer", "replica"],
+            "properties": {
+              "operator": {"type": "string"},
+              "original_issuer": {"type": "string"},
+              "replica": {"type": "string"}
+            }
+          }
+        }
+      }
+    }
+  }
+}

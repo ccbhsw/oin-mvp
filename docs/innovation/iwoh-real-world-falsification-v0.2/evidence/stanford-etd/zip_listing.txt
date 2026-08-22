@@ -1,0 +1,8 @@
+Archive:  /home/ubuntu/Downloads/etd.wacz
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+      579  2020-06-22 05:33   webarchive.yaml
+   703268  2020-06-22 05:28   indexes/index.cdxj
+114932991  2020-06-22 05:01   archive/enchanting-the-desert-20200622050104.warc
+---------                     -------
+115636838                     3 files

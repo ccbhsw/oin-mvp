@@ -1,0 +1,61 @@
+{
+  "distinct_payloads": [
+    "25b34db75e86abff4815f53fe6ddec07410b1b29eec2a969366a847820224786",
+    "5bbf3af6583a683fc2b8e67aafaed33ce4543dde1856f660a22161e8b2ca5d8b"
+  ],
+  "matches": [
+    {
+      "binding_valid": true,
+      "bundle": "/bundles/8c771cafb49fd37c090fe8e2/",
+      "captured_at": "2026-08-21T03:39:55Z",
+      "evidence_sha256": "ec9c0a0fb29e3897dfd21e06e6ecc6761fafc4ccbb1a5d32ec42b78cda6a826d",
+      "issuer": "experimental-operator-a",
+      "package_problems": [],
+      "package_valid": true,
+      "payload_sha256": "25b34db75e86abff4815f53fe6ddec07410b1b29eec2a969366a847820224786",
+      "peer": "experimental-operator-a",
+      "signature_valid": true,
+      "statement_id": "8c771cafb49fd37c090fe8e2",
+      "statement_sha256": "0b15a80d0ad018df603dfb18eebca5af7b472fa4d8c4193669c514e0eb5f3ddd",
+      "status": 200,
+      "target": "https://en.wikipedia.org/wiki/Saturn",
+      "valid": true
+    },
+    {
+      "binding_valid": true,
+      "bundle": "/foreign/experimental-operator-c/171e3c11fd97b14c191be6e6/",
+      "captured_at": "2026-08-21T03:46:23Z",
+      "evidence_sha256": "06c60d9443805ea893f219eeab84a44746a5d89583bb8bc9e612cad6451240cb",
+      "issuer": "experimental-operator-c",
+      "package_problems": [],
+      "package_valid": true,
+      "payload_sha256": "5bbf3af6583a683fc2b8e67aafaed33ce4543dde1856f660a22161e8b2ca5d8b",
+      "peer": "experimental-operator-b",
+      "signature_valid": true,
+      "statement_id": "171e3c11fd97b14c191be6e6",
+      "statement_sha256": "c054c986ac6afae1d5f292794ce46b579b0c62b3f1ce660973b9591f9cca497f",
+      "status": 200,
+      "target": "https://en.wikipedia.org/wiki/Saturn",
+      "valid": true
+    }
+  ],
+  "peer_reports": [
+    {
+      "catalog_valid": true,
+      "entries": 7,
+      "peer": "experimental-operator-a"
+    },
+    {
+      "catalog_valid": true,
+      "entries": 7,
+      "peer": "experimental-operator-b"
+    },
+    {
+      "catalog_valid": false,
+      "error": "fetch:URLError",
+      "peer": "experimental-operator-c"
+    }
+  ],
+  "target": "https://en.wikipedia.org/wiki/Saturn",
+  "valid_match_count": 2
+}

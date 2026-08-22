@@ -1,0 +1,47 @@
+# R1–R8 现实证据证伪矩阵
+
+**判定术语。** `FALSIFIED_AS_UNIQUE_PRIMITIVE` 表示该规则的底层能力已由既有标准或通用理论直接覆盖，不能作为新的基础协议原语。`PARTIALLY_FALSIFIED_AS_PROFILE` 表示既有标准承载构件和安全行为，但仍要选定跨标准 mapping；它只能构成 profile work。`NO_EVIDENCE_OF_DEPLOYED_VALUE` 表示当前真实 corpus 没有 profile-conformant input 或需求证据，不能据此宣称实际价值。
+
+| Rule | 规则最小含义 | Real corpus input | Existing-standard substitute | Baseline-B result | IWOH real-run result | Rule-level verdict | Why |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| R1 Target grouping | 不隐式合并 redirect/canonical/query/alias；声明 grouping basis/evidence。 | IA CDX URL forms; Stanford 301; Common Crawl canonical evidence. | HTTP URI/link/redirect + Memento Original Resource + PROV relationship + VC custom claim. | B1 exact-key plus typed relation evidence. | `NON_PROFILE_INPUT`. | `PARTIALLY_FALSIFIED_AS_PROFILE` | No base standard chooses one grouping policy, but a normal profile mapping supplies it without a new primitive. |
+| R2 Representation comparability | Vary/request/auth/vantage/policy context must be compatible before bytes are compared as change. | One raw CC WARC includes `Vary`, language, cookie, Authorization, User-Agent and GeoIP; no real matched pair. | RFC 9110 selected-representation/Vary + WARC request/response evidence + VC/PROV custom claims. | B3 incomplete-context means no assessment. | `NON_PROFILE_INPUT`. | `PARTIALLY_FALSIFIED_AS_PROFILE`; `NO_EVIDENCE_OF_DEPLOYED_VALUE` | Existing standards supply the information and a mapping can state the predicate. The realistic corpus does not test a two-party actual statement comparison. |
+| R3 Time evidence | Distinguish local archive times from independent/causal time evidence; avoid threshold inference. | IA/Arquivo equal reported datetime; ordered IA replay dates; no qualified receipt pair. | RFC 3161/RFC 4998 time evidence, SCITT/CT receipts, causal ordering theory. | B4 reports archive time only unless independent receipt exists. | `NON_PROFILE_INPUT`. | `FALSIFIED_AS_UNIQUE_PRIMITIVE`; `NO_EVIDENCE_OF_DEPLOYED_VALUE` | Cryptographic time and log ordering are existing capabilities. A Web-capture precedence table is a domain profile, untested here on qualified receipts. |
+| R4 Parallel observation | Do not call near-time different bytes parallel without causal evidence; preserve both. | No real cross-archive different-byte near-time pair. | CRDT multi-value concurrency / happens-before; WARC preserves records. | B5 `different-records-not-assessed`. | `NON_PROFILE_INPUT`. | `FALSIFIED_AS_UNIQUE_PRIMITIVE`; `NO_EVIDENCE_OF_DEPLOYED_VALUE` | CRDT concurrency is direct prior art; current corpus provides no case that can test a stronger Web-specific result. |
+| R5 History scope / missing history | Explicit local/declared scope and completeness; no global absence from local non-return. | IA/Arquivo local holdings; UKWA query blocked; no signed coverage statement. | RFC 7089 TimeMap plus optional interval, SCITT statement/log scope, collection metadata. | B6 declared-scope rule; blocked query never becomes absence. | `NON_PROFILE_INPUT`. | `PARTIALLY_FALSIFIED_AS_PROFILE`; `NO_EVIDENCE_OF_DEPLOYED_VALUE` | Honest scope wording is required in practice, but can be constructed with existing carriers; no real signed scope commitment tests any stricter interoperable behavior. |
+| R6 Cross-archive statement exchange | Common signed capture envelope, hard verification failure rules and import provenance. | Real portable WACZ exists; no real cross-archive statement import. | WACZ portability + VC/PROV + SCITT domain statement/profiles + Data Integrity. | B2/B7 specify artifact binding and importer preservation. | `NON_PROFILE_INPUT`. | `FALSIFIED_AS_UNIQUE_PRIMITIVE`; `NO_EVIDENCE_OF_DEPLOYED_VALUE` | SCITT explicitly uses domain-defined statements and VC/PROV are extensible; an exchange envelope is standard profile work. No deployed exchange evidence exists. |
+| R7 Observer-independence disclosure | Report operator/hosting/network evidence levels; never cryptographically assert real-world independence. | Multiple archive endpoints but no verified organizational independence evidence. | PROV Agent/responsibility + VC issuer/evidence; policy disclosures. | B7 preserves attributed agent/issuer on transfer, if any. | `NON_PROFILE_INPUT`. | `FALSIFIED_AS_UNIQUE_PRIMITIVE`; `NO_EVIDENCE_OF_DEPLOYED_VALUE` | A protocol cannot prove social/operational independence; provenance disclosures can already carry the facts. |
+| R8 Equivocation detection | Detect conflict only from same-log signed checkpoints/proofs; otherwise say not detectable. | No real archive statement log or valid conflicting checkpoint pair. | RFC 9162 CT consistency/inclusion; RFC 9943 SCITT receipts/non-equivocation. | B8 direct CT/SCITT mapping. | `NON_PROFILE_INPUT`. | `FALSIFIED_AS_UNIQUE_PRIMITIVE` for log conflict; `NO_EVIDENCE_OF_DEPLOYED_VALUE` for archive aggregation. | Log-level detection is direct prior art. Cross-archive response policy is only a mapping, and no real checkpoint case was collected. |
+
+## What real users demonstrably need
+
+| User/community | Public evidence | Demonstrated need | Does it demonstrate that IWOH is required? |
+| --- | --- | --- | --- |
+| Independent archive/replay operator | Webrecorder’s ReplayWeb.page publishes archive receipts with original URL, archived date, creation tools, WACZ hash, signature/key/observer metadata and tamper validation.[1] | Provenance display and fixity validation. | **No.** This is an existing WACZ/signing solution. It does not require cross-archive semantic classification. |
+| Investigative journalism / public-interest evidence | Starling Lab and Rolling Stone published a cryptographic archive containing documents, images and 183 Web archives, using Webrecorder, C2PA, signatures, timestamps, content addressing and multiple storage systems to preserve and inspect evidence.[2] | Authenticity, provenance, date/time, preservation, verification and public inspection. | **No.** The case demonstrates a real need and a functioning existing-standard combination; it does not identify an unmet IWOH-specific interoperability failure. |
+| Academic web-archive research | BnF’s qualitative user study reports needs for independently re-examinable citations, a defined and shared corpus, and documented/justified source selection; it reports that printouts/screenshots lack adequate authenticity for dynamic Web sources.[3] | Reproducibility, collection scope, context and source documentation. | **No.** It supports scope/context needs but does not request multi-observer relationship categories or signed cross-archive History Views. |
+| Institutional web archivists | IIPC describes selection goals, crawler collection of harvest metadata, preserving harvested content without modification, and access for researchers, historians and the public.[4] | Collection-policy context, harvest metadata, preservation and access. | **No.** It establishes archive-local needs, not the requirement for an additional global/inter-archive profile. |
+
+## R1–R8 aggregate result
+
+No R1–R8 rule survives as an un-substitutable foundational protocol primitive. R1, R2 and R5 remain meaningful **interoperability profile choices** because base standards do not select a single policy; R3, R4, R6, R7 and log-level R8 are already reconstructed by existing standards/theory. Yet the present real corpus contains zero profile-compliant Capture Statements and zero signed History Views, so it provides **no evidence** that the specific IWOH profile yields an adopted, user-valued or otherwise unavailable result.
+
+The real-user evidence validates the general problem domain—fixity, provenance, reproducible citations, collection scope and evidence preservation. It simultaneously undermines a claim of IWOH necessity: public deployments already combine WACZ, signatures, C2PA, Webrecorder, content addressing and archival metadata to serve those needs. None of the sources identifies a failure that only IWOH’s R1–R8 mapping can remedy.
+
+## References
+
+[1] [Webrecorder, “Showing Provenance on ReplayWeb.page Embeds”](https://webrecorder.net/blog/2022-11-10-showing-provenance-on-replaywebpage-embeds/).  
+[2] [Starling Lab, “Creating the First Cryptographic Archive for a War Crimes Investigation”](https://starlinglab.org/case-studies/the-first-cryptographic-archive-war-crimes-investigation/).  
+[3] [Stirling, Chevallier, Illien, “Web Archives for Researchers”](https://www.dlib.org/dlib/march12/stirling/03stirling.html).  
+[4] [International Internet Preservation Consortium, “About archiving”](https://netpreserve.org/web-archiving/about-archiving/).  
+[5] [RFC 9110, HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110.html).  
+[6] [RFC 7089, Memento](https://www.rfc-editor.org/rfc/rfc7089.html).  
+[7] [IIPC, WARC Format 1.1](https://iipc.github.io/warc-specifications/specifications/warc-format/warc-1.1/).  
+[8] [W3C, PROV-DM](https://www.w3.org/TR/prov-dm/).  
+[9] [W3C, Verifiable Credentials Data Model v2.0](https://www.w3.org/TR/vc-data-model-2.0/).  
+[10] [RFC 9943, SCITT Architecture](https://www.rfc-editor.org/rfc/rfc9943.html).  
+[11] [RFC 9162, Certificate Transparency v2](https://www.rfc-editor.org/rfc/rfc9162.html).  
+[12] [RFC 4998, Evidence Record Syntax](https://www.rfc-editor.org/rfc/rfc4998.html).  
+[13] [Shapiro et al., “Conflict-free Replicated Data Types”](https://arxiv.org/abs/1805.06358).  
+[14] [Real corpus registry](real_corpus_registry.md).  
+[15] [Baseline-B mapping](baseline_b.md).

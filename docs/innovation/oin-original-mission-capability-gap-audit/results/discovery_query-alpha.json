@@ -1,0 +1,43 @@
+{
+  "distinct_payloads": [
+    "174be9b4ea90f389c84e1a09888d0cb16d47b38d1234afbe6f6073e6e3ac321a"
+  ],
+  "matches": [
+    {
+      "binding_valid": true,
+      "bundle": "/bundles/876bab58df613628a3f32fac/",
+      "captured_at": "2026-08-21T03:39:58Z",
+      "evidence_sha256": "f7625d7d34666af126292190de845c0f052a8d0fb9205b9b79b81dcce632d9ef",
+      "issuer": "experimental-operator-a",
+      "package_problems": [],
+      "package_valid": true,
+      "payload_sha256": "174be9b4ea90f389c84e1a09888d0cb16d47b38d1234afbe6f6073e6e3ac321a",
+      "peer": "experimental-operator-a",
+      "signature_valid": true,
+      "statement_id": "876bab58df613628a3f32fac",
+      "statement_sha256": "2da7b4882799cb0ba994587ab6eaca9b35f36e1fce9bce524900d05cadea6e2e",
+      "status": 200,
+      "target": "https://httpbingo.org/anything?ref=alpha",
+      "valid": true
+    }
+  ],
+  "peer_reports": [
+    {
+      "catalog_valid": true,
+      "entries": 6,
+      "peer": "experimental-operator-a"
+    },
+    {
+      "catalog_valid": true,
+      "entries": 6,
+      "peer": "experimental-operator-b"
+    },
+    {
+      "catalog_valid": true,
+      "entries": 2,
+      "peer": "experimental-operator-c"
+    }
+  ],
+  "target": "https://httpbingo.org/anything?ref=alpha",
+  "valid_match_count": 1
+}

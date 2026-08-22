@@ -1,0 +1,159 @@
+{
+  "profile_version": "IWOH-0.1",
+  "scenarios": [
+    {
+      "id": "fragment_identity",
+      "kind": "comparison",
+      "statements": [
+        "fragment-a",
+        "fragment-b"
+      ],
+      "purpose": "fragment excluded from request-target identity"
+    },
+    {
+      "id": "query_variation",
+      "kind": "comparison",
+      "statements": [
+        "query-a",
+        "query-b"
+      ],
+      "purpose": "query retained as request-target identity"
+    },
+    {
+      "id": "redirect_relation",
+      "kind": "comparison",
+      "statements": [
+        "redirect-source",
+        "redirect-final"
+      ],
+      "purpose": "redirect is explicit relation, not implicit target merge"
+    },
+    {
+      "id": "canonical_alias",
+      "kind": "comparison",
+      "statements": [
+        "canonical-alias",
+        "canonical-final"
+      ],
+      "purpose": "HTML canonical is explicit relation, not implicit target merge"
+    },
+    {
+      "id": "vary_language",
+      "kind": "comparison",
+      "statements": [
+        "language-en",
+        "language-zh"
+      ],
+      "purpose": "Vary representation difference"
+    },
+    {
+      "id": "vantage_variation",
+      "kind": "comparison",
+      "statements": [
+        "vantage-us",
+        "vantage-eu"
+      ],
+      "purpose": "network-vantage representation difference"
+    },
+    {
+      "id": "authentication_variation",
+      "kind": "comparison",
+      "statements": [
+        "auth-public",
+        "auth-private"
+      ],
+      "purpose": "authentication representation difference"
+    },
+    {
+      "id": "repeated_observation",
+      "kind": "comparison",
+      "statements": [
+        "repeated-a",
+        "repeated-b"
+      ],
+      "purpose": "same bytes across capture activities"
+    },
+    {
+      "id": "ordered_temporal_variation",
+      "kind": "comparison",
+      "statements": [
+        "temporal-old",
+        "temporal-new"
+      ],
+      "purpose": "ordered changed bytes with causal receipt"
+    },
+    {
+      "id": "parallel_observation",
+      "kind": "comparison",
+      "statements": [
+        "parallel-a",
+        "parallel-b"
+      ],
+      "purpose": "overlapping independent time intervals without causal predecessor"
+    },
+    {
+      "id": "clock_skew_local_declarations",
+      "kind": "comparison",
+      "statements": [
+        "clock-skew-a",
+        "clock-skew-b"
+      ],
+      "purpose": "local clocks cannot create temporal proof"
+    },
+    {
+      "id": "tampered_wacz",
+      "kind": "statement",
+      "statements": [
+        "tampered-wacz"
+      ],
+      "purpose": "WACZ manifest mismatch invalidates statement"
+    },
+    {
+      "id": "inconsistent_agent_disclosure",
+      "kind": "statement",
+      "statements": [
+        "agent-binding-error"
+      ],
+      "purpose": "issuer and verification method mismatch"
+    },
+    {
+      "id": "missing_history_complete_scope",
+      "kind": "history-membership",
+      "statements": [
+        "missing-history-statement"
+      ],
+      "history_views": [
+        "complete-history"
+      ],
+      "purpose": "complete declared scope permits MISSING_HISTORY"
+    },
+    {
+      "id": "partial_history_absence",
+      "kind": "history-membership",
+      "statements": [
+        "partial-history-statement"
+      ],
+      "history_views": [
+        "partial-history"
+      ],
+      "purpose": "partial scope cannot prove absence"
+    },
+    {
+      "id": "contradictory_checkpoints",
+      "kind": "equivocation",
+      "history_views": [
+        "equivocation-left",
+        "equivocation-right"
+      ],
+      "purpose": "same log and tree size, different signed root hashes"
+    },
+    {
+      "id": "valid_statement_import",
+      "kind": "import",
+      "statements": [
+        "imported-valid"
+      ],
+      "purpose": "valid external statement can be imported without rewriting capture agency"
+    }
+  ]
+}

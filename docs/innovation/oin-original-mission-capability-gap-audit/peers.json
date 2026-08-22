@@ -1,0 +1,10 @@
+{
+  "descriptor_type": "signed-catalog-peer-set",
+  "scope": "experimental-operator-peer-set-v0.1",
+  "completeness": "only-for-listed-peer-endpoints-at-query-time",
+  "peers": [
+    {"operator": "experimental-operator-a", "base_url": "http://127.0.0.1:8801"},
+    {"operator": "experimental-operator-b", "base_url": "http://127.0.0.1:8802"},
+    {"operator": "experimental-operator-c", "base_url": "http://127.0.0.1:8803"}
+  ]
+}

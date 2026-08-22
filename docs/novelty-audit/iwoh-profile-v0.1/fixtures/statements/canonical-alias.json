@@ -1,0 +1,86 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://example.test/iwhoh/v1"
+  ],
+  "id": "https://statements.example.test/canonical-alias",
+  "type": [
+    "VerifiableCredential",
+    "WebObservationCapture"
+  ],
+  "profile_version": "IWOH-0.1",
+  "issuer": "https://observer-a.example.test",
+  "capture_activity": {
+    "id": "https://activities.example.test/canonical-alias",
+    "type": "prov:Activity",
+    "started_at": "2026-02-04T00:00:00Z",
+    "ended_at": "2026-02-04T00:00:00Z",
+    "method": "http-capture",
+    "software": "fixture-capture/0.1"
+  },
+  "request_target": {
+    "uri": "https://site.example.test/alias",
+    "uri_normalization": "rfc3986-basic; fragment-removed",
+    "identity_kind": "request-target"
+  },
+  "request_context": {
+    "method": "GET",
+    "recorded_request_headers": {
+      "accept-language": "en"
+    },
+    "authentication_class": "ANONYMOUS",
+    "network_vantage": {
+      "id": "vantage-1",
+      "vantage_effect": "NONE_EXPECTED"
+    },
+    "capture_policy": {
+      "redirect_handling": "record-final-and-chain",
+      "cookie_policy": "none",
+      "content_decoding": "identity",
+      "capture_scope": "response-only"
+    }
+  },
+  "response": {
+    "status": 200,
+    "recorded_response_headers": {
+      "Content-Type": "text/html"
+    },
+    "payload_digest": "sha256:7eacc4404b286b1cc803ec6657aec758319336389c779624c24d8fbd0071b4fb",
+    "body_byte_length": 78
+  },
+  "evidence": {
+    "artifact": "artifacts/canonical-alias.wacz",
+    "wacz_digest": "sha256:7a1d6d76f4fd01b1a0826567f2731b3f010d249dab7aad182e8fcf962c37a4b2",
+    "warc_record_id": "urn:uuid:25ece443-794d-58b4-b2b8-4fdd99ffa1ae",
+    "payload_digest": "sha256:7eacc4404b286b1cc803ec6657aec758319336389c779624c24d8fbd0071b4fb"
+  },
+  "time_evidence": {
+    "kind": "local-declaration",
+    "interval": {
+      "not_before": "2026-02-04T00:00:00Z",
+      "not_after": "2026-02-04T00:00:00Z"
+    },
+    "precision": "PT1S"
+  },
+  "capture_context_completeness": "COMPLETE_FOR_REPRESENTATION_SELECTION",
+  "target_relations": [
+    {
+      "relation": "html-canonical",
+      "from": "https://site.example.test/alias",
+      "to": "https://site.example.test/canonical",
+      "asserted_by": "response"
+    }
+  ],
+  "proof": {
+    "type": "DataIntegrityProof",
+    "cryptosuite": "eddsa-jcs-2022",
+    "created": "2026-08-21T00:00:00Z",
+    "verificationMethod": "https://observer-a.example.test#key-1",
+    "proofPurpose": "assertionMethod",
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://example.test/iwhoh/v1"
+    ],
+    "proofValue": "zyn8HndUAwQdiAUAtYpFTjcxb8bFunMoX8hg7ytGNw8fYunF6aH4v49nDkfPhR2G5vYx4FLE3tS8EkVboJV2bimn"
+  }
+}

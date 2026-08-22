@@ -1,0 +1,78 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://example.test/iwhoh/v1"
+  ],
+  "id": "https://statements.example.test/clock-skew-a",
+  "type": [
+    "VerifiableCredential",
+    "WebObservationCapture"
+  ],
+  "profile_version": "IWOH-0.1",
+  "issuer": "https://observer-a.example.test",
+  "capture_activity": {
+    "id": "https://activities.example.test/clock-skew-a",
+    "type": "prov:Activity",
+    "started_at": "2026-02-11T02:00:00Z",
+    "ended_at": "2026-02-11T02:00:00Z",
+    "method": "http-capture",
+    "software": "fixture-capture/0.1"
+  },
+  "request_target": {
+    "uri": "https://site.example.test/skew",
+    "uri_normalization": "rfc3986-basic; fragment-removed",
+    "identity_kind": "request-target"
+  },
+  "request_context": {
+    "method": "GET",
+    "recorded_request_headers": {
+      "accept-language": "en"
+    },
+    "authentication_class": "ANONYMOUS",
+    "network_vantage": {
+      "id": "vantage-1",
+      "vantage_effect": "NONE_EXPECTED"
+    },
+    "capture_policy": {
+      "redirect_handling": "record-final-and-chain",
+      "cookie_policy": "none",
+      "content_decoding": "identity",
+      "capture_scope": "response-only"
+    }
+  },
+  "response": {
+    "status": 200,
+    "recorded_response_headers": {
+      "Content-Type": "text/plain; charset=utf-8"
+    },
+    "payload_digest": "sha256:20c3a34d1b3af40aad2469cf12b976628e0e3f00da5c8a02a76fef58f3b11541",
+    "body_byte_length": 9
+  },
+  "evidence": {
+    "artifact": "artifacts/clock-skew-a.wacz",
+    "wacz_digest": "sha256:6cdfddef3183e4c5898f2c1e369ff6dfa92d447d67a2975bd89245ffb8c78a56",
+    "warc_record_id": "urn:uuid:d735a75f-b0ba-5618-9d26-f5c148b7a482",
+    "payload_digest": "sha256:20c3a34d1b3af40aad2469cf12b976628e0e3f00da5c8a02a76fef58f3b11541"
+  },
+  "time_evidence": {
+    "kind": "local-declaration",
+    "interval": {
+      "not_before": "2026-02-11T02:00:00Z",
+      "not_after": "2026-02-11T02:00:00Z"
+    },
+    "precision": "PT1S"
+  },
+  "capture_context_completeness": "COMPLETE_FOR_REPRESENTATION_SELECTION",
+  "proof": {
+    "type": "DataIntegrityProof",
+    "cryptosuite": "eddsa-jcs-2022",
+    "created": "2026-08-21T00:00:00Z",
+    "verificationMethod": "https://observer-a.example.test#key-1",
+    "proofPurpose": "assertionMethod",
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://example.test/iwhoh/v1"
+    ],
+    "proofValue": "z4AJ6e979WwazDzP3dfAXJAX55hsKd1RezR1feSbZPvy2GEjdeBbJND1QmYPYiXr1xB2sf2RL6YkRqGPbY5f8EoX7"
+  }
+}

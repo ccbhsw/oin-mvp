@@ -1,0 +1,77 @@
+{
+  "distinct_payloads": [
+    "ff67a9d764d6a2367a187734e697f6a53217db9a21c101d410a113ca871a299d"
+  ],
+  "matches": [
+    {
+      "binding_valid": true,
+      "bundle": "/bundles/c6c94c7b3115a2208a69174b/",
+      "captured_at": "2026-08-21T03:39:46Z",
+      "evidence_sha256": "ac5e4aeca6a1f02d4e05bb4ad0ab95eb9a1899bec99e8fd9adad911f974f0174",
+      "issuer": "experimental-operator-a",
+      "package_problems": [],
+      "package_valid": true,
+      "payload_sha256": "ff67a9d764d6a2367a187734e697f6a53217db9a21c101d410a113ca871a299d",
+      "peer": "experimental-operator-a",
+      "signature_valid": true,
+      "statement_id": "c6c94c7b3115a2208a69174b",
+      "statement_sha256": "92d1f4720a1e408d828e06e95e1569a1d0d0175b55fe4d849714756119020c08",
+      "status": 200,
+      "target": "https://example.com/",
+      "valid": true
+    },
+    {
+      "binding_valid": true,
+      "bundle": "/foreign/experimental-operator-b/9fa22e948b923e1576c3e94f/",
+      "captured_at": "2026-08-21T03:40:35Z",
+      "evidence_sha256": "36d9d5f7b2363a91e2c5e08262a3ca9e8409f0f0c69aee134b2a4d0ceaae59b3",
+      "issuer": "experimental-operator-b",
+      "package_problems": [],
+      "package_valid": true,
+      "payload_sha256": "ff67a9d764d6a2367a187734e697f6a53217db9a21c101d410a113ca871a299d",
+      "peer": "experimental-operator-a",
+      "signature_valid": true,
+      "statement_id": "9fa22e948b923e1576c3e94f",
+      "statement_sha256": "dead29749607559632f97cbd0684dd994076e1d525860dd0901e4d4ebee7e97b",
+      "status": 200,
+      "target": "https://example.com/",
+      "valid": true
+    },
+    {
+      "binding_valid": true,
+      "bundle": "/foreign/experimental-operator-b/9fa22e948b923e1576c3e94f/",
+      "captured_at": "2026-08-21T03:40:35Z",
+      "evidence_sha256": "36d9d5f7b2363a91e2c5e08262a3ca9e8409f0f0c69aee134b2a4d0ceaae59b3",
+      "issuer": "experimental-operator-b",
+      "package_problems": [],
+      "package_valid": true,
+      "payload_sha256": "ff67a9d764d6a2367a187734e697f6a53217db9a21c101d410a113ca871a299d",
+      "peer": "experimental-operator-c",
+      "signature_valid": true,
+      "statement_id": "9fa22e948b923e1576c3e94f",
+      "statement_sha256": "dead29749607559632f97cbd0684dd994076e1d525860dd0901e4d4ebee7e97b",
+      "status": 200,
+      "target": "https://example.com/",
+      "valid": true
+    }
+  ],
+  "peer_reports": [
+    {
+      "catalog_valid": true,
+      "entries": 7,
+      "peer": "experimental-operator-a"
+    },
+    {
+      "catalog_valid": false,
+      "error": "fetch:URLError",
+      "peer": "experimental-operator-b"
+    },
+    {
+      "catalog_valid": true,
+      "entries": 3,
+      "peer": "experimental-operator-c"
+    }
+  ],
+  "target": "https://example.com/",
+  "valid_match_count": 3
+}

@@ -1,0 +1,249 @@
+{
+  "profile_version": "IWOH-0.1",
+  "assertion_fields": [
+    "target_identity",
+    "target_relation",
+    "statement_validity",
+    "comparability",
+    "relationship",
+    "history_membership",
+    "completeness_scope",
+    "statement_import_validity",
+    "equivocation_status"
+  ],
+  "scenarios": {
+    "fragment_identity": {
+      "target_identity": "SAME_REQUEST_TARGET",
+      "target_relation": "EXACT_REQUEST_TARGET",
+      "statement_validity": {
+        "fragment-a": "VALID",
+        "fragment-b": "VALID"
+      },
+      "comparability": "COMPARABLE",
+      "relationship": "REPEATED_OBSERVATION",
+      "history_membership": "NOT_APPLICABLE",
+      "completeness_scope": "NOT_APPLICABLE",
+      "statement_import_validity": "NOT_APPLICABLE",
+      "equivocation_status": "NOT_APPLICABLE"
+    },
+    "query_variation": {
+      "target_identity": "DIFFERENT_REQUEST_TARGETS",
+      "target_relation": "DISTINCT_REQUEST_TARGETS",
+      "statement_validity": {
+        "query-a": "VALID",
+        "query-b": "VALID"
+      },
+      "comparability": "INCOMPARABLE",
+      "relationship": "INCOMPARABLE",
+      "history_membership": "NOT_APPLICABLE",
+      "completeness_scope": "NOT_APPLICABLE",
+      "statement_import_validity": "NOT_APPLICABLE",
+      "equivocation_status": "NOT_APPLICABLE"
+    },
+    "redirect_relation": {
+      "target_identity": "DIFFERENT_REQUEST_TARGETS",
+      "target_relation": "RELATED_TARGET",
+      "statement_validity": {
+        "redirect-source": "VALID",
+        "redirect-final": "VALID"
+      },
+      "comparability": "INCOMPARABLE",
+      "relationship": "INCOMPARABLE",
+      "history_membership": "NOT_APPLICABLE",
+      "completeness_scope": "NOT_APPLICABLE",
+      "statement_import_validity": "NOT_APPLICABLE",
+      "equivocation_status": "NOT_APPLICABLE"
+    },
+    "canonical_alias": {
+      "target_identity": "DIFFERENT_REQUEST_TARGETS",
+      "target_relation": "RELATED_TARGET",
+      "statement_validity": {
+        "canonical-alias": "VALID",
+        "canonical-final": "VALID"
+      },
+      "comparability": "INCOMPARABLE",
+      "relationship": "INCOMPARABLE",
+      "history_membership": "NOT_APPLICABLE",
+      "completeness_scope": "NOT_APPLICABLE",
+      "statement_import_validity": "NOT_APPLICABLE",
+      "equivocation_status": "NOT_APPLICABLE"
+    },
+    "vary_language": {
+      "target_identity": "SAME_REQUEST_TARGET",
+      "target_relation": "EXACT_REQUEST_TARGET",
+      "statement_validity": {
+        "language-en": "VALID",
+        "language-zh": "VALID"
+      },
+      "comparability": "INCOMPARABLE",
+      "relationship": "REPRESENTATION_VARIATION",
+      "history_membership": "NOT_APPLICABLE",
+      "completeness_scope": "NOT_APPLICABLE",
+      "statement_import_validity": "NOT_APPLICABLE",
+      "equivocation_status": "NOT_APPLICABLE"
+    },
+    "vantage_variation": {
+      "target_identity": "SAME_REQUEST_TARGET",
+      "target_relation": "EXACT_REQUEST_TARGET",
+      "statement_validity": {
+        "vantage-us": "VALID",
+        "vantage-eu": "VALID"
+      },
+      "comparability": "INCOMPARABLE",
+      "relationship": "REPRESENTATION_VARIATION",
+      "history_membership": "NOT_APPLICABLE",
+      "completeness_scope": "NOT_APPLICABLE",
+      "statement_import_validity": "NOT_APPLICABLE",
+      "equivocation_status": "NOT_APPLICABLE"
+    },
+    "authentication_variation": {
+      "target_identity": "SAME_REQUEST_TARGET",
+      "target_relation": "EXACT_REQUEST_TARGET",
+      "statement_validity": {
+        "auth-public": "VALID",
+        "auth-private": "VALID"
+      },
+      "comparability": "INCOMPARABLE",
+      "relationship": "REPRESENTATION_VARIATION",
+      "history_membership": "NOT_APPLICABLE",
+      "completeness_scope": "NOT_APPLICABLE",
+      "statement_import_validity": "NOT_APPLICABLE",
+      "equivocation_status": "NOT_APPLICABLE"
+    },
+    "repeated_observation": {
+      "target_identity": "SAME_REQUEST_TARGET",
+      "target_relation": "EXACT_REQUEST_TARGET",
+      "statement_validity": {
+        "repeated-a": "VALID",
+        "repeated-b": "VALID"
+      },
+      "comparability": "COMPARABLE",
+      "relationship": "REPEATED_OBSERVATION",
+      "history_membership": "NOT_APPLICABLE",
+      "completeness_scope": "NOT_APPLICABLE",
+      "statement_import_validity": "NOT_APPLICABLE",
+      "equivocation_status": "NOT_APPLICABLE"
+    },
+    "ordered_temporal_variation": {
+      "target_identity": "SAME_REQUEST_TARGET",
+      "target_relation": "EXACT_REQUEST_TARGET",
+      "statement_validity": {
+        "temporal-old": "VALID",
+        "temporal-new": "VALID"
+      },
+      "comparability": "COMPARABLE",
+      "relationship": "TEMPORAL_VARIATION",
+      "history_membership": "NOT_APPLICABLE",
+      "completeness_scope": "NOT_APPLICABLE",
+      "statement_import_validity": "NOT_APPLICABLE",
+      "equivocation_status": "NOT_APPLICABLE"
+    },
+    "parallel_observation": {
+      "target_identity": "SAME_REQUEST_TARGET",
+      "target_relation": "EXACT_REQUEST_TARGET",
+      "statement_validity": {
+        "parallel-a": "VALID",
+        "parallel-b": "VALID"
+      },
+      "comparability": "COMPARABLE",
+      "relationship": "PARALLEL_OBSERVATION",
+      "history_membership": "NOT_APPLICABLE",
+      "completeness_scope": "NOT_APPLICABLE",
+      "statement_import_validity": "NOT_APPLICABLE",
+      "equivocation_status": "NOT_APPLICABLE"
+    },
+    "clock_skew_local_declarations": {
+      "target_identity": "SAME_REQUEST_TARGET",
+      "target_relation": "EXACT_REQUEST_TARGET",
+      "statement_validity": {
+        "clock-skew-a": "VALID",
+        "clock-skew-b": "VALID"
+      },
+      "comparability": "COMPARABLE",
+      "relationship": "UNKNOWN",
+      "history_membership": "NOT_APPLICABLE",
+      "completeness_scope": "NOT_APPLICABLE",
+      "statement_import_validity": "NOT_APPLICABLE",
+      "equivocation_status": "NOT_APPLICABLE"
+    },
+    "tampered_wacz": {
+      "target_identity": "NOT_APPLICABLE",
+      "target_relation": "NOT_APPLICABLE",
+      "statement_validity": {
+        "tampered-wacz": "INVALID_ARCHIVE_DIGEST"
+      },
+      "comparability": "NOT_APPLICABLE",
+      "relationship": "NOT_APPLICABLE",
+      "history_membership": "NOT_APPLICABLE",
+      "completeness_scope": "NOT_APPLICABLE",
+      "statement_import_validity": "NOT_APPLICABLE",
+      "equivocation_status": "NOT_APPLICABLE"
+    },
+    "inconsistent_agent_disclosure": {
+      "target_identity": "NOT_APPLICABLE",
+      "target_relation": "NOT_APPLICABLE",
+      "statement_validity": {
+        "agent-binding-error": "INVALID_AGENT_BINDING"
+      },
+      "comparability": "NOT_APPLICABLE",
+      "relationship": "NOT_APPLICABLE",
+      "history_membership": "NOT_APPLICABLE",
+      "completeness_scope": "NOT_APPLICABLE",
+      "statement_import_validity": "NOT_APPLICABLE",
+      "equivocation_status": "NOT_APPLICABLE"
+    },
+    "missing_history_complete_scope": {
+      "target_identity": "NOT_APPLICABLE",
+      "target_relation": "NOT_APPLICABLE",
+      "statement_validity": {
+        "missing-history-statement": "VALID"
+      },
+      "comparability": "NOT_APPLICABLE",
+      "relationship": "NOT_APPLICABLE",
+      "history_membership": "MISSING_HISTORY",
+      "completeness_scope": "COMPLETE_FOR_DECLARED_SCOPE",
+      "statement_import_validity": "NOT_APPLICABLE",
+      "equivocation_status": "NOT_APPLICABLE"
+    },
+    "partial_history_absence": {
+      "target_identity": "NOT_APPLICABLE",
+      "target_relation": "NOT_APPLICABLE",
+      "statement_validity": {
+        "partial-history-statement": "VALID"
+      },
+      "comparability": "NOT_APPLICABLE",
+      "relationship": "NOT_APPLICABLE",
+      "history_membership": "HISTORY_ABSENCE_UNPROVEN",
+      "completeness_scope": "PARTIAL",
+      "statement_import_validity": "NOT_APPLICABLE",
+      "equivocation_status": "NOT_APPLICABLE"
+    },
+    "contradictory_checkpoints": {
+      "target_identity": "NOT_APPLICABLE",
+      "target_relation": "NOT_APPLICABLE",
+      "statement_validity": {
+        "equivocation-left": "VALID",
+        "equivocation-right": "VALID"
+      },
+      "comparability": "NOT_APPLICABLE",
+      "relationship": "NOT_APPLICABLE",
+      "history_membership": "NOT_APPLICABLE",
+      "completeness_scope": "COMPLETE_FOR_DECLARED_SCOPE",
+      "statement_import_validity": "NOT_APPLICABLE",
+      "equivocation_status": "EQUIVOCATION_DETECTED"
+    },
+    "valid_statement_import": {
+      "target_identity": "NOT_APPLICABLE",
+      "target_relation": "NOT_APPLICABLE",
+      "statement_validity": {
+        "imported-valid": "VALID"
+      },
+      "comparability": "NOT_APPLICABLE",
+      "relationship": "NOT_APPLICABLE",
+      "history_membership": "NOT_APPLICABLE",
+      "completeness_scope": "NOT_APPLICABLE",
+      "statement_import_validity": "IMPORTED_VALID",
+      "equivocation_status": "NOT_APPLICABLE"
+    }
+  }
+}

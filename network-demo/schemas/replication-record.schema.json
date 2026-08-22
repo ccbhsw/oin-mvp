@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oin.example/schemas/replication-record.schema.json",
+  "title": "OIN Local Demo Replication Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_version",
+    "record_id",
+    "recorded_at",
+    "status",
+    "original_artifact_digest",
+    "original_issuer",
+    "importer",
+    "custodian",
+    "replica",
+    "source",
+    "import_time",
+    "verification_result",
+    "retained_artifact_identity"
+  ],
+  "properties": {
+    "record_version": {"const": "1.0"},
+    "record_id": {"type": "string", "minLength": 1},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "status": {"enum": ["ACCEPTED", "REJECTED"]},
+    "original_artifact_digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"},
+    "original_manifest_digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"},
+    "original_issuer": {"type": ["string", "null"], "minLength": 1},
+    "importer": {"type": "string", "minLength": 1},
+    "custodian": {"type": "string", "minLength": 1},
+    "replica": {"type": "string", "minLength": 1},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transport", "export_digest"],
+      "properties": {
+        "transport": {"enum": ["file", "http", "https"]},
+        "locator": {"type": "string"},
+        "export_digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "import_time": {"type": "string", "format": "date-time"},
+    "verification_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "checks"],
+      "properties": {
+        "status": {"enum": ["VERIFIED", "INVALID_SIGNATURE", "INVALID_BINDING", "MALFORMED_ARTIFACT", "NOT_FOUND", "MISSING_REPLICA"]},
+        "checks": {"type": "object"},
+        "detail": {"type": "string"}
+      }
+    },
+    "retained_artifact_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relative_path", "artifact_digest"],
+      "properties": {
+        "relative_path": {"type": ["string", "null"], "minLength": 1},
+        "artifact_digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    }
+  }
+}
