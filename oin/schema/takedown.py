@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 try:
     from datetime import UTC
 except ImportError:
-    from datetime import timezone
     UTC = timezone.utc
 from typing import Literal, Optional, Any
 from pydantic import BaseModel, Field, field_validator, model_validator
@@ -22,6 +21,7 @@ class TakedownRequest(BaseModel):
     requester_pubkey: str
     reason: str
     requested_at: datetime
+    # 请求方声称类型，仅记录，不参与逻辑判断
     request_type: Literal["standard", "illegal_content_report"] = "standard"
     action: Literal["hide", "delete"] = "hide"
     status: Literal["pending", "resolved", "disputed", "rejected"] = "pending"
@@ -31,6 +31,13 @@ class TakedownRequest(BaseModel):
         default=None,
         description="10-14 天窗口值仅作为产品设计参考，非法律强制期限，具体期限应由节点运营者根据当地法律自行确定。"
     )
+    
+    # 核实相关字段
+    verified_basis: Optional[Literal["court_order", "regulatory_notice", "law_enforcement_request"]] = None
+    verification_document: Optional[str] = None
+    verified_by: Optional[str] = None
+    post_dispute_record: Optional[str] = None
+    
     signature: str
 
     model_config = {
@@ -49,6 +56,9 @@ class TakedownRequest(BaseModel):
                     "jurisdiction": "EU",
                     "legal_basis": "GDPR Article 17",
                     "dispute_deadline": "2026-09-05T12:00:00Z",
+                    "verified_basis": "court_order",
+                    "verification_document": "https://example.com/order.pdf",
+                    "verified_by": "node-admin-01",
                     "signature": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
                 }
             ]
@@ -77,16 +87,21 @@ class TakedownRequest(BaseModel):
         return value
 
     @model_validator(mode="after")
-    def validate_request_type_rules(self) -> TakedownRequest:
-        if self.request_type == "illegal_content_report" and self.dispute_deadline is not None:
-            raise ValueError("dispute_deadline must be None when request_type is 'illegal_content_report'")
+    def validate_takedown_logic(self) -> TakedownRequest:
+        # 仅当 verified_basis 有值时，dispute_deadline 才可为 None
+        # verified_basis 为 None 时，dispute_deadline 必须有值
+        if self.verified_basis is None:
+            if self.dispute_deadline is None:
+                raise ValueError("dispute_deadline must be provided when verified_basis is None")
         return self
 
     def _signing_payload(self) -> bytes:
+        # Exclude signature, but ensure optional fields are serialized as null when None
         payload = self.model_dump(mode="json", exclude={"signature"}, exclude_unset=False, exclude_none=False)
         return json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
     def verify_signature(self) -> bool:
+        """Return whether the current takedown request payload has a valid requester signature."""
         try:
             public_key = Ed25519PublicKey.from_public_bytes(bytes.fromhex(self.requester_pubkey))
             public_key.verify(bytes.fromhex(self.signature), self._signing_payload())
@@ -97,6 +112,7 @@ class TakedownRequest(BaseModel):
         return True
 
     def sign(self, private_key: Ed25519PrivateKey | bytes) -> str:
+        """Sign the takedown request payload, update signature, and return its hex signature."""
         if isinstance(private_key, bytes):
             if len(private_key) != 32:
                 raise ValueError("raw Ed25519 private keys must be 32 bytes")
