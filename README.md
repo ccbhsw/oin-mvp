@@ -9,6 +9,14 @@ OIN MVP 是一个**签名、可复制、冲突保留**的公共信息 Observatio
 2. **验证器异构性独立性待完全闭合**：Node.js 验证器由同一执行上下文参考 Python 源码实现，待后续由独立执行者复现确认。
 3. **历史测试结论修正**：原全链路测试报告中第 5 步 (REPLICATE / VERIFY) 的 PASS 结论已撤回。日志显示当时未调用验证接口，PASS 仅代表数据同步。
 
+### 测试节点访问
+
+当前 OIN 测试节点（阿里云香港）的 API 端口不对外网公开开放，用于控制访问范围。
+
+如需测试节点功能（`oin submit/verify/conflicts` 等），请开一个 GitHub Issue 说明你的测试目的和 IP 地址，我会尽快为你临时开放测试访问。
+
+此环境为测试用途，不保证数据长期保留或服务稳定性。欢迎来测。
+
 ## 先从安全 Demo 开始
 
 陌生开发者应先阅读 [SECURITY.md](SECURITY.md)、[SECURITY_AUDIT.md](SECURITY_AUDIT.md) 和 [SAFE_DEMO.md](SAFE_DEMO.md)。默认安全 demo **不访问网络**、不要求 API key 或现有私钥，并且只写入项目内的 `demo/data/`。不要将 `docs/innovation/` 中的历史研究脚本作为首次运行路径。
