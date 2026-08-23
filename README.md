@@ -37,20 +37,20 @@ oin conflicts <object_id>
 
 该节点为公共测试环境，不保证稳定性，测试数据可能被重置。请勿用于生产用途。请勿提交违法或未授权抓取的目标。节点只接受 URL 捕获；公开环境关闭 replication pull/push、Observer 注册，以及直接导入 observation。
 
-本地离线仍使用 `oin keys-init`、`oin capture`、`oin verify <导出目录>`。`oin init` / `oin submit` 是连接远程节点的命令。
+本地离线核验请使用节点导出的验证包，或阅读 [SAFE_DEMO.md](SAFE_DEMO.md)。连接远程节点使用 `oin init` / `oin submit` / `oin verify <object_id>`。
 
 ## 先从安全 Demo 开始
 
 陌生开发者应先阅读 [SECURITY.md](SECURITY.md)、[SECURITY_AUDIT.md](SECURITY_AUDIT.md) 和 [SAFE_DEMO.md](SAFE_DEMO.md)。默认安全 demo **不访问网络**、不要求 API key 或现有私钥，并且只写入项目内的 `demo/data/`。不要将 `docs/innovation/` 中的历史研究脚本作为首次运行路径。
 
-本仓库的网络行为不是隐式的：`pip install` 或 Docker build 会从配置的包/镜像来源下载依赖；`oin capture`、API capture 与 `operator.py capture` 只访问调用者明确提供的公开 HTTP(S) URL；replication pull、RFC 3161 TSA 和 S3 都必须由调用者或部署者显式配置。完整表格见 [SAFE_DEMO.md](SAFE_DEMO.md)。
+本仓库的网络行为不是隐式的：`pip install` 或 Docker build 会从配置的包/镜像来源下载依赖；`oin submit`、API capture 与 `operator.py capture` 只访问调用者明确提供的公开 HTTP(S) URL；replication pull、RFC 3161 TSA 和 S3 都必须由调用者或部署者显式配置。完整表格见 [SAFE_DEMO.md](SAFE_DEMO.md)。
 
 ## 出站网络访问清单
 
 | 触发操作 | 目标 | 发送的数据 | 是否默认执行 |
 | --- | --- | --- | --- |
 | `pip install` 或 `docker build` | 配置的 Python 包索引或容器镜像仓库 | 依赖/镜像下载请求 | 仅在显式安装或构建时。 |
-| `oin capture`、`operator.py capture`、API capture | 调用者明确指定的公开 HTTP(S) URL 与经验证的 redirect | HTTP GET；不会上传本地文件。 | 否。 |
+| `oin submit`、`operator.py capture`、API capture | 调用者明确指定的公开 HTTP(S) URL 与经验证的 redirect | HTTP GET；不会上传本地文件。 | 否。 |
 | API replication pull | 调用者明确指定的 peer；默认只允许公开目标 | GET 请求 observation ID 与 export 包。 | 否。 |
 | API `tsa_url` | 调用者明确指定且验证为公开的 RFC 3161 TSA | 签名 manifest 的 hash timestamp query。 | 否。 |
 | 可选 S3 backend | 部署者显式配置的 bucket / endpoint | 归档字节与对象存储操作。 | 否。 |
@@ -70,20 +70,15 @@ python3 -m venv .venv
 python -m pip install --require-hashes -r requirements-build.lock
 python -m pip install --require-hashes -r requirements-dev.lock
 python -m pip install --no-deps --no-build-isolation -e .
+python -m pip install "click>=8.0" "requests>=2.31"
 
-# 初始化一个 Observer 身份
-oin keys-init ./data/keys
+# 启动一个仅监听本机的 API 节点
+OIN_DATA_DIR=./node-a OIN_NODE_NAME=observer-a python -m uvicorn oin.api.app:app --host 127.0.0.1 --port 8001
 
-# 观察一个真实公开页面并导出离线验证包
-oin capture https://example.com \
-  --key ./data/keys/observer-private.pem \
-  --output ./export
-
-# 不访问 OIN 网站的情况下核验包
-oin verify ./export
-
-# 启动一个 API 节点
-OIN_DATA_DIR=./node-a OIN_NODE_NAME=observer-a oin serve --port 8001
+# 另开一个终端，连接该节点
+oin init --endpoint http://127.0.0.1:8001
+oin submit https://example.com
+oin verify <object_id>
 ```
 
 ## 三节点开发网络（仅本机开发）
@@ -112,7 +107,7 @@ curl -X POST http://localhost:8003/v1/replication/pull \
 
 ## 文档与边界
 
-安全策略、审计范围、已修复问题和残余风险见 [SECURITY.md](SECURITY.md) 与 [SECURITY_AUDIT.md](SECURITY_AUDIT.md)。最小隔离运行步骤见 [SAFE_DEMO.md](SAFE_DEMO.md)。默认 API 没有认证或限流；不要直接将其暴露到公网。
+安全策略、审计范围、已修复问题和残余风险见 [SECURITY.md](SECURITY.md) 与 [SECURITY_AUDIT.md](SECURITY_AUDIT.md)。最小隔离运行步骤见 [SAFE_DEMO.md](SAFE_DEMO.md)。默认开发节点没有认证；不要把未开启 `OIN_PUBLIC_LOCKDOWN` 的节点直接暴露到公网。公共测试节点见上文「测试节点访问」。
 
 完整工程与协议设计见 [docs/OIN_MVP_Engineering_Design.md](docs/OIN_MVP_Engineering_Design.md)。部署、独立性、密钥轮换、威胁模型与验收步骤见 [docs/Deployment_and_Operations.md](docs/Deployment_and_Operations.md)。签名描述符与可替换 Bootstrap 发现原型的配置、边界和验证方式见 [docs/architecture/discovery-bootstrap-api.md](docs/architecture/discovery-bootstrap-api.md)。受哈希锁定的依赖安装、更新和审查流程见 [docs/security/dependency-locking.md](docs/security/dependency-locking.md)。
 
