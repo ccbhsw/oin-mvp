@@ -11,14 +11,24 @@ OIN MVP 是一个**签名、可复制、冲突保留**的公共信息 Observatio
 
 ### 测试节点访问
 
-OIN 提供了一个公共测试节点，可以直接使用：
+公共测试节点是 HTTP API，用命令行客户端访问，不是网站。macOS 终端、Windows PowerShell、Linux 均可。
 
-- 节点地址：https://oin.timfi.top
-- 使用方法：`oin init --endpoint https://oin.timfi.top`
+浏览器请打开：
 
-常用命令：
+- 状态：https://oin.timfi.top/healthz
+- 接口文档：https://oin.timfi.top/docs
 
+根路径 https://oin.timfi.top/ 没有页面，会返回 `Not Found`。
+
+安装客户端：
+
+```bash
+pip install "git+https://github.com/ccbhsw/oin-mvp.git"
 ```
+
+然后：
+
+```bash
 oin init --endpoint https://oin.timfi.top
 oin submit https://example.com
 oin verify <object_id>
@@ -27,7 +37,7 @@ oin conflicts <object_id>
 
 该节点为公共测试环境，不保证稳定性，测试数据可能被重置。请勿用于生产用途。请勿提交违法或未授权抓取的目标。节点只接受 URL 捕获；公开环境关闭 replication pull/push、Observer 注册，以及直接导入 observation。
 
-本地离线捕获与离线核验仍使用 `oin keys-init`、`oin capture`、`oin verify <导出目录>`；`oin init` / `oin submit` 是连接远程节点的客户端命令。
+本地离线仍使用 `oin keys-init`、`oin capture`、`oin verify <导出目录>`。`oin init` / `oin submit` 是连接远程节点的命令。
 
 ## 先从安全 Demo 开始
 
