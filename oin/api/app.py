@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import base64
 import os
+import time
 from pathlib import Path
 from typing import Any
 
 import httpx
 from fastapi import FastAPI, HTTPException, Response
 from pydantic import BaseModel, Field
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse
 
 from oin.api.repository import IndependenceProfile, Observer, Repository
 from oin.capture.http_capture import (
@@ -181,7 +184,73 @@ class ObserverRegistration(BaseModel):
     independence_profile: dict[str, Any] | None = None
 
 
+def _public_lockdown_enabled() -> bool:
+    return os.getenv("OIN_PUBLIC_LOCKDOWN", "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+class MaxBodySizeMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        content_length = request.headers.get("content-length")
+        if content_length:
+            try:
+                if int(content_length) > 10 * 1024 * 1024:
+                    return JSONResponse(status_code=413, content={"detail": "Payload too large"})
+            except ValueError:
+                return JSONResponse(status_code=400, content={"detail": "Invalid Content-Length"})
+        return await call_next(request)
+
+
+class PublicLockdownMiddleware(BaseHTTPMiddleware):
+    blocked_paths = {
+        "/v1/observations",
+        "/v1/observers",
+        "/v1/replication/pull",
+        "/v1/replication/push",
+    }
+
+    async def dispatch(self, request, call_next):
+        if not _public_lockdown_enabled():
+            return await call_next(request)
+        path = request.url.path.rstrip("/") or "/"
+        if request.method == "POST" and path in self.blocked_paths:
+            return JSONResponse(
+                status_code=403,
+                content={"detail": "endpoint disabled on public test node"},
+            )
+        return await call_next(request)
+
+
+class SimplePostRateLimitMiddleware(BaseHTTPMiddleware):
+    limit = 10
+    window = 60.0
+
+    def __init__(self, app):
+        super().__init__(app)
+        self._hits: dict[str, list[float]] = {}
+
+    async def dispatch(self, request, call_next):
+        if not _public_lockdown_enabled() or request.method != "POST":
+            return await call_next(request)
+        forwarded = (request.headers.get("x-forwarded-for") or "").split(",")[0].strip()
+        ip = (
+            request.headers.get("cf-connecting-ip")
+            or forwarded
+            or (request.client.host if request.client else "unknown")
+        )
+        now = time.time()
+        hits = [ts for ts in self._hits.get(ip, []) if now - ts < self.window]
+        if len(hits) >= self.limit:
+            self._hits[ip] = hits
+            return JSONResponse(status_code=429, content={"detail": "Too many requests"})
+        hits.append(now)
+        self._hits[ip] = hits
+        return await call_next(request)
+
+
 app = FastAPI(title="OIN MVP Observer Node", version="0.1.0", description="Signed, conflict-preserving observations of public information.")
+app.add_middleware(MaxBodySizeMiddleware)
+app.add_middleware(SimplePostRateLimitMiddleware)
+app.add_middleware(PublicLockdownMiddleware)
 
 
 @app.get("/healthz")

@@ -11,11 +11,23 @@ OIN MVP 是一个**签名、可复制、冲突保留**的公共信息 Observatio
 
 ### 测试节点访问
 
-当前 OIN 测试节点（阿里云香港）的 API 端口不对外网公开开放，用于控制访问范围。
+OIN 提供了一个公共测试节点，可以直接使用：
 
-如需测试节点功能（`oin submit/verify/conflicts` 等），请开一个 GitHub Issue 说明你的测试目的和 IP 地址，我会尽快为你临时开放测试访问。
+- 节点地址：https://oin.timfi.top
+- 使用方法：`oin init --endpoint https://oin.timfi.top`
 
-此环境为测试用途，不保证数据长期保留或服务稳定性。欢迎来测。
+常用命令：
+
+```
+oin init --endpoint https://oin.timfi.top
+oin submit https://example.com
+oin verify <object_id>
+oin conflicts <object_id>
+```
+
+该节点为公共测试环境，不保证稳定性，测试数据可能被重置。请勿用于生产用途。请勿提交违法或未授权抓取的目标。节点只接受 URL 捕获；公开环境关闭 replication pull/push、Observer 注册，以及直接导入 observation。
+
+本地离线捕获与离线核验仍使用 `oin keys-init`、`oin capture`、`oin verify <导出目录>`；`oin init` / `oin submit` 是连接远程节点的客户端命令。
 
 ## 先从安全 Demo 开始
 
