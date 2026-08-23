@@ -2,20 +2,13 @@
 
 from __future__ import annotations
 
-try:
-    try:
+from datetime import datetime, timezone
+from typing import Any
+
 try:
     from datetime import UTC
 except ImportError:
-    from datetime import timezone
     UTC = timezone.utc
-except ImportError:
-    from datetime import timezone
-    UTC = timezone.utc
-except ImportError:
-    import datetime as dt
-    UTC = dt.timezone.utc, datetime
-from typing import Any
 
 from sqlalchemy import (
     JSON,
@@ -29,7 +22,10 @@ from sqlalchemy import (
     create_engine,
     select,
 )
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
+
+from oin.schema.takedown import TakedownRequest
 
 
 class Base(DeclarativeBase):
@@ -136,6 +132,27 @@ class IndependenceProfile(Base):
     risk_score: Mapped[int | None] = mapped_column(Integer, nullable=True)
     score_method: Mapped[str | None] = mapped_column(String(128), nullable=True)
     attested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+
+
+class Takedown(Base):
+    __tablename__ = "takedowns"
+    request_id: Mapped[str] = mapped_column(String(160), primary_key=True)
+    target_object_id: Mapped[str] = mapped_column(Text, index=True)
+    requester_pubkey: Mapped[str] = mapped_column(String(64), index=True)
+    reason: Mapped[str] = mapped_column(Text)
+    requested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    request_type: Mapped[str] = mapped_column(String(32))
+    action: Mapped[str] = mapped_column(String(16))
+    status: Mapped[str] = mapped_column(String(16), index=True)
+    jurisdiction: Mapped[str | None] = mapped_column(Text, nullable=True)
+    legal_basis: Mapped[str | None] = mapped_column(Text, nullable=True)
+    dispute_deadline: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    verified_basis: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    verification_document: Mapped[str | None] = mapped_column(Text, nullable=True)
+    verified_by: Mapped[str | None] = mapped_column(Text, nullable=True)
+    post_dispute_record: Mapped[str | None] = mapped_column(Text, nullable=True)
+    signature: Mapped[str] = mapped_column(String(128))
+    received_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
 
 
 class Repository:
@@ -248,3 +265,36 @@ class Repository:
     def conflicts_for_object(self, object_id: str) -> list[Conflict]:
         with self.session_factory() as session:
             return list(session.scalars(select(Conflict).where(Conflict.object_id == object_id).order_by(Conflict.id)))
+
+    def save_takedown(self, takedown: TakedownRequest) -> bool:
+        try:
+            with self.session_factory.begin() as session:
+                if session.get(Takedown, takedown.request_id):
+                    return False
+                session.add(
+                    Takedown(
+                        request_id=takedown.request_id,
+                        target_object_id=takedown.target_object_id,
+                        requester_pubkey=takedown.requester_pubkey,
+                        reason=takedown.reason,
+                        requested_at=takedown.requested_at,
+                        request_type=takedown.request_type,
+                        action=takedown.action,
+                        status=takedown.status,
+                        jurisdiction=takedown.jurisdiction,
+                        legal_basis=takedown.legal_basis,
+                        dispute_deadline=takedown.dispute_deadline,
+                        verified_basis=takedown.verified_basis,
+                        verification_document=takedown.verification_document,
+                        verified_by=takedown.verified_by,
+                        post_dispute_record=takedown.post_dispute_record,
+                        signature=takedown.signature,
+                    )
+                )
+            return True
+        except IntegrityError:
+            return False
+
+    def get_takedown(self, request_id: str) -> Takedown | None:
+        with self.session_factory() as session:
+            return session.get(Takedown, request_id)

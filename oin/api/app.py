@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 import os
 import time
 from pathlib import Path
@@ -27,6 +28,7 @@ from oin.discovery.bootstrap import MAX_BUNDLE_BYTES
 from oin.discovery.service import DiscoveryConfigurationError, build_local_descriptor_from_environment
 from oin.identity.keys import load_private_key, write_keypair
 from oin.observation.service import build_observation, verify_archive_binding, verify_manifest
+from oin.schema.takedown import TakedownRequest
 from oin.storage.backends import FileStorage, S3Storage
 from oin.timestamp.rfc3161 import local_declaration, obtain_rfc3161_token
 from oin.transparency.merkle import MerkleLog, verify_proof
@@ -252,6 +254,25 @@ app.add_middleware(MaxBodySizeMiddleware)
 app.add_middleware(SimplePostRateLimitMiddleware)
 app.add_middleware(PublicLockdownMiddleware)
 
+_REPLAY_WINDOW_SECONDS = 300
+_replay_cache: dict[str, float] = {}
+
+
+def _takedown_fingerprint(pubkey: str, signature: str) -> str:
+    return hashlib.sha256(f"{pubkey}:{signature}".encode()).hexdigest()
+
+
+def _takedown_replay_seen(fingerprint: str) -> bool:
+    now = time.time()
+    expired = [key for key, seen_at in _replay_cache.items() if now - seen_at > _REPLAY_WINDOW_SECONDS]
+    for key in expired:
+        del _replay_cache[key]
+    return fingerprint in _replay_cache
+
+
+def _remember_takedown_fingerprint(fingerprint: str) -> None:
+    _replay_cache[fingerprint] = time.time()
+
 
 @app.get("/healthz")
 def healthz() -> dict[str, str]:
@@ -460,3 +481,43 @@ def replication_pull(request: PullRequest) -> dict[str, Any]:
     except httpx.HTTPError as exc:
         raise HTTPException(status_code=502, detail=f"replication pull failed: {exc}") from exc
     return {"peer_url": peer, "results": results}
+
+
+@app.post("/v1/takedown", status_code=201)
+def submit_takedown(takedown: TakedownRequest) -> dict[str, str]:
+    if not takedown.verify_signature():
+        raise HTTPException(status_code=403, detail="Signature verification failed")
+    fingerprint = _takedown_fingerprint(takedown.requester_pubkey, takedown.signature)
+    if _takedown_replay_seen(fingerprint) or repo.get_takedown(takedown.request_id) is not None:
+        raise HTTPException(status_code=409, detail="Duplicate request detected")
+    inserted = repo.save_takedown(takedown)
+    if not inserted:
+        raise HTTPException(status_code=409, detail="Duplicate request detected")
+    _remember_takedown_fingerprint(fingerprint)
+    return {"status": "received", "request_id": takedown.request_id}
+
+
+@app.get("/v1/takedown/{request_id}")
+def get_takedown(request_id: str) -> dict[str, Any]:
+    row = repo.get_takedown(request_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail="takedown request not found")
+    return {
+        "request_id": row.request_id,
+        "target_object_id": row.target_object_id,
+        "requester_pubkey": row.requester_pubkey,
+        "reason": row.reason,
+        "requested_at": row.requested_at.isoformat() if row.requested_at else None,
+        "request_type": row.request_type,
+        "action": row.action,
+        "status": row.status,
+        "jurisdiction": row.jurisdiction,
+        "legal_basis": row.legal_basis,
+        "dispute_deadline": row.dispute_deadline.isoformat() if row.dispute_deadline else None,
+        "verified_basis": row.verified_basis,
+        "verification_document": row.verification_document,
+        "verified_by": row.verified_by,
+        "post_dispute_record": row.post_dispute_record,
+        "signature": row.signature,
+        "received_at": row.received_at.isoformat() if row.received_at else None,
+    }
