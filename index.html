@@ -3,176 +3,233 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OIN 公共记录</title>
-  <meta name="description" content="把一个网页登记成可以回头核对的记录：签字、内容、时间分开看。" />
+  <title>OIN Record</title>
+  <meta name="description" content="File a URL, text, image, file, or voice recording as a signed public record." />
   <link rel="icon" href="favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --bg: #ffffff;
-      --ink: #141414;
-      --mute: #5c5c5c;
-      --line: #141414;
-      --wash: #f4f4f4;
-      --stamp: #c1121f;
-      --ok: #0f6b3d;
-      --bad: #c1121f;
-    }
+    :root { --bg:#fff; --ink:#141414; --mute:#5c5c5c; --line:#141414; --wash:#f4f4f4; --ok:#0f6b3d; --bad:#c1121f; }
     * { box-sizing: border-box; }
     html { -webkit-font-smoothing: antialiased; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--ink);
-      font-family: "IBM Plex Sans", "Noto Sans SC", sans-serif;
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:"IBM Plex Sans","Noto Sans SC",sans-serif; }
+    .page { max-width:40rem; margin:0 auto; padding:1.25rem 1.25rem 4rem; }
+    .mast { display:flex; justify-content:space-between; gap:1rem; align-items:baseline; padding-bottom:.75rem; border-bottom:2px solid var(--line); font-size:.78rem; }
+    .mast strong { letter-spacing:.16em; text-transform:uppercase; }
+    .lang button { background:none; border:0; padding:0; font:inherit; cursor:pointer; color:var(--mute); }
+    .lang button.on { color:var(--ink); font-weight:600; }
+    h1 { margin:1.75rem 0 0; font-size:1.85rem; font-weight:600; letter-spacing:-.03em; line-height:1.25; }
+    .lede { margin:.85rem 0 0; color:var(--mute); line-height:1.7; }
+    .tabs { display:flex; flex-wrap:wrap; gap:.25rem 1.25rem; margin-top:1.75rem; border-bottom:2px solid var(--line); }
+    .tabs button { background:none; border:0; border-bottom:2px solid transparent; margin-bottom:-2px; padding:.35rem 0 .55rem; font:inherit; cursor:pointer; color:var(--mute); }
+    .tabs button.on { color:var(--ink); font-weight:600; border-bottom-color:var(--ink); }
+    form { padding-top:1.15rem; }
+    label, .kicker { display:block; font-size:.78rem; letter-spacing:.08em; text-transform:uppercase; }
+    input[type=text], input[type=url], textarea {
+      width:100%; margin-top:.5rem; border:0; border-bottom:1px solid var(--line); background:transparent;
+      padding:.7rem 0; font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.92rem;
     }
-    .page { max-width: 40rem; margin: 0 auto; padding: 1.25rem 1.25rem 4rem; }
-    .mast {
-      display: flex; justify-content: space-between; align-items: baseline;
-      padding-bottom: .75rem; border-bottom: 2px solid var(--line);
-      font-size: .78rem; letter-spacing: .12em; text-transform: uppercase;
+    textarea { border:1px solid var(--line); padding:.75rem; min-height:8rem; }
+    input:focus, textarea:focus { outline:none; border-color:var(--ink); border-bottom-width:2px; }
+    .hint { font-size:.78rem; color:var(--mute); line-height:1.5; }
+    .row { display:flex; flex-wrap:wrap; gap:.75rem; justify-content:space-between; align-items:center; margin-top:1.1rem; }
+    button.solid { border:0; background:var(--ink); color:#fff; height:2.6rem; padding:0 1.25rem; font-size:.92rem; cursor:pointer; }
+    button.solid:disabled { opacity:.55; cursor:wait; }
+    button.linkish { height:auto; padding:0; background:none; color:var(--ink); text-decoration:underline; text-underline-offset:3px; border:0; font:inherit; cursor:pointer; }
+    button.danger { background:var(--bad); color:#fff; border:0; height:2.6rem; padding:0 1.1rem; cursor:pointer; }
+    .panel { margin-top:1.75rem; border-top:2px solid var(--line); padding-top:1.1rem; }
+    h2 { margin:.35rem 0 0; font-size:1.35rem; font-weight:600; letter-spacing:-.02em; }
+    .field { display:grid; gap:.35rem; padding:1rem 0; border-top:1px solid #d9d9d9; }
+    .mono { font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.78rem; word-break:break-all; }
+    .idbox { background:var(--wash); padding:.7rem .8rem; margin-top:.55rem; }
+    .check { display:flex; gap:1rem; padding:.55rem 0; border-top:1px solid #ececec; }
+    .ok { color:var(--ok); width:2.7rem; flex:0 0 2.7rem; font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; }
+    .bad { color:var(--bad); width:2.7rem; flex:0 0 2.7rem; font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; }
+    .warn { color:var(--bad); }
+    .muted { color:var(--mute); }
+    details.fold > summary { cursor:pointer; list-style:none; padding:1rem 0; border-top:1px solid #d9d9d9; }
+    details.fold > summary::-webkit-details-marker { display:none; }
+    .td-item { padding:.9rem 0; border-top:1px solid #ececec; }
+    @media (min-width:640px) {
+      .page { padding-top:2rem; }
+      h1 { font-size:2.15rem; }
+      .field { grid-template-columns:6.5rem minmax(0,1fr); gap:1.25rem; }
     }
-    .mast strong { letter-spacing: .16em; font-weight: 600; }
-    .mast span { color: var(--mute); letter-spacing: .08em; text-transform: none; }
-    h1 {
-      margin: 1.75rem 0 0;
-      font-size: 1.85rem; font-weight: 600; letter-spacing: -0.03em; line-height: 1.25;
-    }
-    .lede { margin: .85rem 0 0; color: var(--mute); line-height: 1.7; max-width: 28rem; }
-    form { margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
-    label { display: block; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; }
-    input {
-      width: 100%; margin-top: .55rem; border: 0; border-bottom: 1px solid var(--line);
-      background: transparent; padding: .7rem 0; font-family: "IBM Plex Mono", ui-monospace, monospace;
-      font-size: .92rem; color: var(--ink);
-    }
-    input:focus { outline: none; border-bottom-width: 2px; }
-    .row { display: flex; flex-wrap: wrap; gap: .75rem 1rem; justify-content: space-between; align-items: center; margin-top: 1.1rem; }
-    button {
-      border: 0; background: var(--ink); color: #fff; height: 2.6rem; padding: 0 1.35rem;
-      font-size: .92rem; font-weight: 500; cursor: pointer; letter-spacing: .04em;
-    }
-    button:disabled { opacity: .55; cursor: wait; }
-    .linkish { height: auto; padding: 0; background: transparent; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; letter-spacing: 0; }
-    .hint { font-size: .78rem; color: var(--mute); line-height: 1.5; margin: 0; }
-    .panel { margin-top: 1.75rem; border-top: 2px solid var(--line); padding-top: 1.1rem; }
-    .kicker { margin: 0; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
-    h2 { margin: .35rem 0 0; font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; }
-    .field { display: grid; gap: .35rem; padding: 1rem 0; border-top: 1px solid #d9d9d9; }
-    .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .78rem; word-break: break-all; }
-    .idbox { background: var(--wash); padding: .7rem .8rem; margin-top: .55rem; }
-    .check { display: flex; gap: 1rem; padding: .55rem 0; border-top: 1px solid #ececec; font-size: .92rem; }
-    .ok { color: var(--ok); width: 2.6rem; flex: 0 0 2.6rem; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; }
-    .bad { color: var(--bad); width: 2.6rem; flex: 0 0 2.6rem; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; }
-    .warn { color: var(--bad); }
-    .muted { color: var(--mute); }
-    details.fold > summary { cursor: pointer; list-style: none; padding: 1rem 0; border-top: 1px solid #d9d9d9; font-size: .92rem; }
-    details.fold > summary::-webkit-details-marker { display: none; }
-    .td-item { padding: .9rem 0; border-top: 1px solid #ececec; }
-    @media (min-width: 640px) {
-      .page { padding-top: 2rem; }
-      h1 { font-size: 2.15rem; }
-      .field { grid-template-columns: 6.5rem minmax(0,1fr); gap: 1.25rem; align-items: start; }
-    }
-    @media (max-width: 420px) { #go { width: 100%; } }
   </style>
 </head>
 <body>
   <div class="page">
     <div class="mast">
       <strong>OIN Record</strong>
-      <span>公共测试节点 · oin.timfi.top</span>
-    </div>
-    <h1>把网址登记成一份<br/>可以回头核对的卷宗。</h1>
-    <p class="lede">节点只记录谁在何时看到了什么。它核对手写签字和内容有没有被改过，不替你判断页面本身是真是假。</p>
-    <form id="form">
-      <label for="url">网址</label>
-      <input id="url" value="https://example.com" inputmode="url" autocomplete="off" spellcheck="false" />
-      <div class="row">
-        <p class="hint">测试环境，记录可能被清空。默认的 example.com 已被登记过，提交后会看到系统如何拦住重复时间。</p>
-        <button id="go" type="submit">登记</button>
+      <div class="lang">
+        <span id="nodeLabel" class="muted"></span>
+        &nbsp;&nbsp;
+        <button type="button" id="zhBtn">中文</button>
+        /
+        <button type="button" id="enBtn">English</button>
       </div>
-    </form>
+    </div>
+    <h1 id="title"></h1>
+    <p class="lede" id="lede"></p>
+    <div class="tabs" id="tabs"></div>
+    <form id="form"></form>
     <div id="out"></div>
     <section id="takedowns" class="panel"></section>
   </div>
   <script>
     const API = "https://oin.timfi.top";
+    const T = {
+      zh: {
+        node:"公共测试节点", title:"把材料登记成可以回头核对的卷宗。",
+        lede:"支持网址、文本、图片、文件和语音。节点只记录谁在何时看到了什么，核对手写签字和内容有没有被改过，不判断材料本身真假。",
+        tabUrl:"网址", tabText:"文本", tabFile:"图片 / 文件", tabVoice:"语音",
+        urlLabel:"网址", textLabel:"文本", fileLabel:"选择文件", voiceLabel:"录音",
+        identLabel:"对象标识（可选）", identHint:"相同标识会被当成同一对象的不同版本。不要用「笔记」「1」这种容易撞车的词。",
+        urlHint:"测试环境。默认 example.com 已经登记过，提交后会看到系统如何拦住重复时间。",
+        textHint:"纯文本，最大 10 MB。", fileHint:"图片、PDF、音频或其他文件，最大 10 MB。",
+        voiceHint:"在浏览器里录音，提交为音频文件。最大 10 MB。",
+        voiceStart:"开始录音", voiceStop:"停止录音", voiceReady:"录音完成，可以登记。",
+        voiceNeed:"请先录一段音。", fileNeed:"请先选择文件。", textNeed:"请先输入文本。",
+        submit:"登记", submitting:"登记中", workingTitle:"正在抓取并签字", workingBody:"通常十几秒，请不要关掉页面。",
+        recorded:"已写入节点", docket:"卷宗", verified:"核对通过", unverified:"核对未完全通过", pending:"已写下，待核对",
+        urlField:"来源", signerField:"签名者", idField:"记录编号", checkField:"核对", timeField:"时间",
+        idHelp:"这串编号是这份记录的身份证。之后用它核对内容有没有被改、签字还在不在。",
+        checkIntro:"系统在问三件事：签字是否对得上、内容有没有被改过、编号是否对得上这份内容。",
+        checkSig:"签字对得上", checkSigHint:"这份记录确实是这个节点签过的。",
+        checkHash:"内容没有被改过", checkHashHint:"现在存着的材料和当初登记的那一份对得上。",
+        checkId:"编号对得上这份内容", checkIdHint:"记录编号是从内容算出来的。",
+        checkOk:"这份材料在上面这个时间点被记录下来，之后没有被改过。",
+        timeLocal:"节点自己声明的时间", timeThird:"第三方盖章时间",
+        timeLocalHint:"时间是这个公共测试节点自己说的，不能单独当成第三方时间证明。",
+        timeThirdHint:"独立时间戳服务盖了章，提交的人改不了这个时间。",
+        recordedAt:"记录时间", stampedAt:"盖章时间", versions:"已归档版本", noVersions:"暂时没有读到历史版本。",
+        conflicts:"节点里另有 {n} 组版本对照。", expandKey:"展开完整公钥", collapseKey:"收起完整公钥",
+        noSigner:"这次返回里没有签名者公钥。", signerPrefix:"签名者", digestPrefix:"内容摘要",
+        unknownTime:"未知时间", unknown:"未知",
+        repeatKicker:"未写入新卷", repeatTitle:"这份内容以前已经登记过了",
+        repeatBody:"节点拒绝再写一条“新时间”。这不是故障，而是系统在防止时间被悄悄改掉。",
+        repeatNext:"第一次记录仍然有效。再记一次必须带独立时间戳盖章。",
+        priorCount:"库里已有 {n} 条同一内容的记录", failTitle:"这次没记成",
+        failUrl:"请输入以 http:// 或 https:// 开头的完整网址。",
+        failFile:"文件超过 10 MB。", failVoice:"这个浏览器不能录音，请改用文件上传。",
+        boardKicker:"公开台账", boardTitle:"下架请求",
+        boardHint:"只列编号、对象、时间、状态和动作。申请人身份和理由不在这里出现。",
+        boardEmpty:"功能已就绪，目前还没有真实下架案例。",
+        boardCount:"共 {total} 条，这里列最近 {n} 条。", boardError:"连不上节点，暂时读不到下架记录。",
+        pass:"通过", fail:"未过"
+      },
+      en: {
+        node:"Public test node", title:"File an artifact as a record you can check later.",
+        lede:"URLs, text, images, files, and voice. The node records who saw what, and when. It checks the signature and whether the bytes changed. It does not judge whether the material is true.",
+        tabUrl:"URL", tabText:"Text", tabFile:"Image / file", tabVoice:"Voice",
+        urlLabel:"URL", textLabel:"Text", fileLabel:"Choose a file", voiceLabel:"Recording",
+        identLabel:"Object identifier (optional)", identHint:"The same identifier is treated as versions of one object. Avoid common words like “notes” or “1”.",
+        urlHint:"Test environment. example.com is already on file; submitting it shows how repeat timestamps are blocked.",
+        textHint:"Plain text, 10 MB max.", fileHint:"Images, PDFs, audio, or other files, 10 MB max.",
+        voiceHint:"Record in the browser and file it as audio. 10 MB max.",
+        voiceStart:"Start recording", voiceStop:"Stop", voiceReady:"Recording ready to file.",
+        voiceNeed:"Record a clip first.", fileNeed:"Choose a file first.", textNeed:"Enter some text first.",
+        submit:"File record", submitting:"Filing", workingTitle:"Capturing and signing", workingBody:"Usually about ten seconds. Keep this page open.",
+        recorded:"Written to the node", docket:"Record", verified:"Verified", unverified:"Verification incomplete", pending:"Saved, verification pending",
+        urlField:"Source", signerField:"Signer", idField:"Record ID", checkField:"Checks", timeField:"Time",
+        idHelp:"This ID is the record’s identity. Use it later to check whether the bytes or the signature changed.",
+        checkIntro:"Three questions: does the signature match, are the bytes unchanged, and does the ID belong to this content.",
+        checkSig:"Signature matches", checkSigHint:"This node signed the record.",
+        checkHash:"Bytes unchanged", checkHashHint:"What is stored now matches what was filed.",
+        checkId:"ID matches this content", checkIdHint:"The ID is computed from the content.",
+        checkOk:"This material was recorded at the time above, and has not been altered since.",
+        timeLocal:"Node-declared time", timeThird:"Third-party timestamp",
+        timeLocalHint:"The time is what this public test node says. It is not independent third-party time.",
+        timeThirdHint:"An independent timestamp authority stamped this record. The submitter cannot change that time.",
+        recordedAt:"Recorded", stampedAt:"Stamped", versions:"Filed versions", noVersions:"No version history came back.",
+        conflicts:"The node also has {n} version-comparison records.", expandKey:"Show full public key", collapseKey:"Hide full public key",
+        noSigner:"No signer public key in this response.", signerPrefix:"Signer", digestPrefix:"Digest",
+        unknownTime:"Unknown time", unknown:"Unknown",
+        repeatKicker:"Not written as a new record", repeatTitle:"This content is already on file",
+        repeatBody:"The node refused another record with a new time. If the same bytes are re-signed with a different clock, it is blocked.",
+        repeatNext:"The first record still stands. Filing it again requires an independent timestamp.",
+        priorCount:"{n} records of the same content already exist", failTitle:"Not filed",
+        failUrl:"Enter a full URL starting with http:// or https://.",
+        failFile:"The file is over 10 MB.", failVoice:"This browser cannot record audio. Upload a file instead.",
+        boardKicker:"Public ledger", boardTitle:"Takedown requests",
+        boardHint:"ID, target, time, status, and action only. Requester identity and reasons stay off this page.",
+        boardEmpty:"The endpoint is live. No real takedown cases yet.",
+        boardCount:"{total} total, showing the latest {n}.", boardError:"Could not reach the node for takedown records.",
+        pass:"Pass", fail:"Fail"
+      }
+    };
+
+    let lang = localStorage.getItem("oin-lang") === "en" ? "en" : "zh";
+    let mode = "url";
+    let voiceBlob = null;
+    let recorder = null;
+    let chunks = [];
     const form = document.getElementById("form");
     const out = document.getElementById("out");
-    const go = document.getElementById("go");
-    const urlInput = document.getElementById("url");
     const takedownsEl = document.getElementById("takedowns");
 
+    function t() { return T[lang]; }
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, "&"+"amp;").replace(/</g, "&"+"lt;").replace(/>/g, "&"+"gt;").replace(/"/g, "&"+"quot;");
+    }
     function looksLikeHttpUrl(value) {
-      try {
-        const u = new URL(value.trim());
-        return (u.protocol === "http:" || u.protocol === "https:") && !!u.hostname;
-      } catch { return false; }
+      try { const u = new URL(value.trim()); return (u.protocol === "http:" || u.protocol === "https:") && !!u.hostname; }
+      catch { return false; }
     }
     function when(v) {
-      if (!v) return "未知时间";
+      if (!v) return t().unknownTime;
       const hasZone = /Z$|[+-]\d{2}:?\d{2}$/.test(v);
       const d = new Date(hasZone ? v : v + "Z");
       if (Number.isNaN(d.getTime())) return v;
-      return new Intl.DateTimeFormat("zh-CN", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(d) + " UTC";
-    }
-    function escapeHtml(s) {
-      return String(s)
-        .replace(/&/g, "&" + "amp;")
-        .replace(/</g, "&" + "lt;")
-        .replace(/>/g, "&" + "gt;")
-        .replace(/"/g, "&" + "quot;")
-        .replace(/'/g, "&#39;");
-    }
-    function check(ok, label, hint) {
-      return `<div class="check"><span class="${ok ? "ok" : "bad"}">${ok ? "通过" : "未过"}</span><div><strong>${label}</strong><div class="hint">${hint}</div></div></div>`;
+      return new Intl.DateTimeFormat(lang === "zh" ? "zh-CN" : "en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(d) + " UTC";
     }
     function abbreviateKey(value) {
       const text = (value || "").trim();
-      if (text.length <= 16) return text;
-      return text.slice(0, 8) + "…" + text.slice(-8);
+      return text.length <= 16 ? text : text.slice(0,8) + "…" + text.slice(-8);
     }
     function signerFromManifest(manifest) {
       if (!manifest) return "";
       if (manifest.issuer_pubkey) return String(manifest.issuer_pubkey);
       if (manifest.observer && manifest.observer.public_key) return String(manifest.observer.public_key);
-      if (manifest.observer && manifest.observer.issuer_pubkey) return String(manifest.observer.issuer_pubkey);
       return "";
     }
     function statusLabel(v) {
-      return ({ pending: "待处理", resolved: "已处理", disputed: "有异议", rejected: "已驳回", accepted: "已受理", completed: "已完成" }[v] || v || "未知");
+      const zh = { pending:"待处理", resolved:"已处理", disputed:"有异议", rejected:"已驳回", hide:"隐藏" };
+      const en = { pending:"Pending", resolved:"Resolved", disputed:"Disputed", rejected:"Rejected" };
+      return (lang==="zh"?zh:en)[v] || v || t().unknown;
     }
     function actionLabel(v) {
-      return ({ hide: "隐藏", delete: "删除", remove: "删除", tombstone: "标记下架" }[v] || v || "未知");
+      const zh = { hide:"隐藏", delete:"删除", remove:"删除" };
+      const en = { hide:"Hide", delete:"Delete", remove:"Delete" };
+      return (lang==="zh"?zh:en)[v] || v || t().unknown;
     }
-    function previewContent(value) {
-      const text = (value || "").trim();
-      if (!text) return "（无摘要）";
-      return text.length <= 20 ? text : text.slice(0, 20);
+    function toBase64(buffer) {
+      const bytes = new Uint8Array(buffer);
+      let binary = "";
+      for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+      return btoa(binary);
+    }
+    function check(ok, label, hint) {
+      return `<div class="check"><span class="${ok?"ok":"bad"}">${ok?t().pass:t().fail}</span><div><strong>${escapeHtml(label)}</strong><div class="hint">${escapeHtml(hint)}</div></div></div>`;
     }
     function signerBlock(signer) {
-      if (!signer) return `<p class="muted">这次返回里没有签名者公钥。</p>`;
-      return `<p>签名者 <span class="mono">${escapeHtml(abbreviateKey(signer))}</span></p>
-        <button type="button" class="linkish" data-full="${escapeHtml(signer)}">展开完整公钥</button>
+      if (!signer) return `<p class="muted">${escapeHtml(t().noSigner)}</p>`;
+      return `<p>${escapeHtml(t().signerPrefix)} <span class="mono">${escapeHtml(abbreviateKey(signer))}</span></p>
+        <button type="button" class="linkish" data-full="${escapeHtml(signer)}">${escapeHtml(t().expandKey)}</button>
         <p class="mono signer-full" style="display:none;margin-top:.5rem"></p>`;
     }
     function historyBlock(versions, conflictCount, open) {
       const rows = versions.length ? versions.map((row) => `
         <div class="td-item">
           <p style="margin:0">${escapeHtml(when(row.capturedAt))}</p>
-          <p class="mono muted" style="margin:.35rem 0 0">签名者 ${escapeHtml(row.signer ? abbreviateKey(row.signer) : "未知")}</p>
-          <p class="mono muted" style="margin:.25rem 0 0">内容摘要 ${escapeHtml(row.contentPreview)}</p>
-        </div>`).join("") : `<p class="muted">暂时没有读到历史版本。</p>`;
-      return `<details class="fold"${open ? " open" : ""}>
-        <summary>已归档版本 · ${versions.length} 条</summary>
-        ${rows}
-        ${conflictCount > 0 ? `<p class="hint">节点里另有 ${conflictCount} 组版本对照。</p>` : ""}
-      </details>`;
+          <p class="mono muted" style="margin:.35rem 0 0">${escapeHtml(t().signerPrefix)} ${escapeHtml(row.signer ? abbreviateKey(row.signer) : t().unknown)}</p>
+          <p class="mono muted" style="margin:.25rem 0 0">${escapeHtml(t().digestPrefix)} ${escapeHtml(row.contentPreview || "")}</p>
+        </div>`).join("") : `<p class="muted">${escapeHtml(t().noVersions)}</p>`;
+      return `<details class="fold"${open?" open":""}><summary>${escapeHtml(t().versions)} · ${versions.length}</summary>${rows}
+        ${conflictCount>0?`<p class="hint">${escapeHtml(t().conflicts.replace("{n}", String(conflictCount)))}</p>`:""}</details>`;
     }
-    function bindSignerExpand(root) {
+    function bindSigner(root) {
       const expand = root.querySelector(".linkish");
       if (!expand) return;
       expand.addEventListener("click", () => {
@@ -180,170 +237,206 @@
         const showing = full.style.display !== "none";
         full.style.display = showing ? "none" : "block";
         full.textContent = expand.getAttribute("data-full") || "";
-        expand.textContent = showing ? "展开完整公钥" : "收起完整公钥";
+        expand.textContent = showing ? t().expandKey : t().collapseKey;
       });
     }
     async function loadHistory(objectId) {
-      const versions = [];
-      let conflictCount = 0;
+      const versions = []; let conflictCount = 0;
       if (!objectId) return { versions, conflictCount };
       try {
         const cRes = await fetch(API + "/v1/objects/" + encodeURIComponent(objectId) + "/conflicts");
-        if (cRes.ok) {
-          const cJson = await cRes.json();
-          if (Array.isArray(cJson)) conflictCount = cJson.length;
-        }
+        if (cRes.ok) { const j = await cRes.json(); if (Array.isArray(j)) conflictCount = j.length; }
       } catch {}
       try {
         const oRes = await fetch(API + "/v1/objects/" + encodeURIComponent(objectId) + "/observations");
         if (oRes.ok) {
-          const oJson = await oRes.json();
-          if (Array.isArray(oJson)) {
-            oJson.forEach((item) => {
+          const j = await oRes.json();
+          if (Array.isArray(j)) {
+            j.forEach((item) => {
               if (!item.observation_id) return;
               versions.push({
                 observationId: item.observation_id,
                 capturedAt: item.capture && item.capture.captured_at,
                 signer: signerFromManifest(item),
-                contentPreview: previewContent((item.content && item.content.raw_content_hash) || (item.object && item.object.canonical_url) || ""),
+                contentPreview: ((item.content && item.content.raw_content_hash) || "").slice(0, 20)
               });
             });
-            versions.sort((a, b) => String(b.capturedAt || "").localeCompare(String(a.capturedAt || "")));
+            versions.sort((a,b) => String(b.capturedAt||"").localeCompare(String(a.capturedAt||"")));
           }
         }
       } catch {}
       return { versions, conflictCount };
     }
-
-    async function loadTakedowns() {
-      try {
-        const res = await fetch(API + "/v1/takedown?limit=10");
-        if (!res.ok) throw new Error("下架列表返回 " + res.status);
-        const data = await res.json();
-        const records = Array.isArray(data.records) ? data.records : [];
-        const total = typeof data.total === "number" ? data.total : records.length;
-        let html = `<p class="kicker">公开台账</p><h2>下架请求</h2><p class="hint">只列编号、对象、时间、状态和动作。申请人身份和理由不在这里出现。</p>`;
-        if (!records.length) {
-          html += `<p>功能已就绪，目前还没有真实下架案例。</p>`;
-        } else {
-          html += records.map((row) => `
-            <div class="td-item">
-              <div class="row" style="margin:0">
-                <p style="margin:0">${escapeHtml(statusLabel(row.status))} · ${escapeHtml(actionLabel(row.action))}</p>
-                <p class="hint">${escapeHtml(when(row.requested_at))}</p>
-              </div>
-              <p class="mono" style="margin:.45rem 0 0">${escapeHtml(row.request_id || "（无编号）")}</p>
-              <p class="mono muted" style="margin:.2rem 0 0">${escapeHtml(row.target_object_id || "（无对象编号）")}</p>
-            </div>
-          `).join("");
-          html += `<p class="hint">共 ${total} 条，这里列最近 ${records.length} 条。</p>`;
-        }
-        takedownsEl.innerHTML = html;
-      } catch (err) {
-        takedownsEl.innerHTML = `<p class="kicker">公开台账</p><h2>下架请求</h2><p class="warn">连不上节点，暂时读不到下架记录。</p>`;
+    async function afterCapture(res, payload) {
+      if (res.status === 422 && payload && payload.detail && payload.detail.reason === "TIMESTAMP_EVIDENCE_REQUIRED") {
+        const hist = await loadHistory(payload.detail.object_id);
+        out.innerHTML = `<div class="panel">
+          <p class="kicker">${escapeHtml(t().repeatKicker)}</p><h2>${escapeHtml(t().repeatTitle)}</h2>
+          <p>${escapeHtml(t().repeatBody)}</p><p class="muted">${escapeHtml(t().repeatNext)}</p>
+          ${payload.detail.prior_observation_count!=null?`<p class="mono muted">${escapeHtml(t().priorCount.replace("{n}", String(payload.detail.prior_observation_count)))}</p>`:""}
+          <div class="field"><p class="muted" style="margin:0">${escapeHtml(t().signerField)}</p><div>${signerBlock(hist.versions[0] && hist.versions[0].signer)}</div></div>
+          ${historyBlock(hist.versions, hist.conflictCount, true)}
+        </div>`;
+        bindSigner(out);
+        return;
       }
+      if (!res.ok) {
+        const msg = (payload && (payload.detail && payload.detail.detail || payload.detail || payload.message)) || (t().failTitle + " (" + res.status + ")");
+        throw new Error(typeof msg === "string" ? msg : JSON.stringify(msg));
+      }
+      if (payload.observation_id && !payload.manifest) {
+        const obs = await fetch(API + "/v1/observations/" + encodeURIComponent(payload.observation_id));
+        if (obs.ok) payload.manifest = await obs.json();
+      }
+      const id = payload.observation_id;
+      const page = (payload.manifest && payload.manifest.object && payload.manifest.object.canonical_url) || "";
+      const captured = payload.manifest && payload.manifest.capture && payload.manifest.capture.captured_at;
+      const signer = signerFromManifest(payload.manifest);
+      let verify = null, verifyError = null;
+      try {
+        const vRes = await fetch(API + "/v1/verify/" + encodeURIComponent(id));
+        if (!vRes.ok) verifyError = t().unverified;
+        else verify = await vRes.json();
+      } catch { verifyError = t().unverified; }
+      const objectId = payload.manifest && payload.manifest.object && payload.manifest.object.object_id;
+      const hist = await loadHistory(objectId);
+      const sig = verify && verify.manifest && verify.manifest.signature_valid === true;
+      const hash = verify && verify.archive_hash_valid && verify.raw_content_hash_valid && verify.raw_content_bytes_valid;
+      const mid = verify && verify.manifest && verify.manifest.manifest_id_valid === true;
+      const overall = verify && verify.status === "VALID";
+      const kind = (verify && verify.timestamp && verify.timestamp.kind) || (payload.timestamp_evidence && payload.timestamp_evidence.kind);
+      const third = kind === "rfc3161";
+      out.innerHTML = `<div class="panel">
+        <div class="row" style="margin:0"><div><p class="kicker">${escapeHtml(t().docket)}</p><h2>${escapeHtml(t().recorded)}</h2></div>
+          <p class="${overall?"ok":"muted"}" style="width:auto;flex:none">${escapeHtml(overall?t().verified:verify?t().unverified:t().pending)}</p></div>
+        <div class="field"><p class="muted" style="margin:0">${escapeHtml(t().urlField)}</p><div><p class="mono">${escapeHtml(page)}</p><p class="hint">${escapeHtml(when(captured))}</p></div></div>
+        <div class="field"><p class="muted" style="margin:0">${escapeHtml(t().signerField)}</p><div>${signerBlock(signer)}</div></div>
+        <div class="field"><p class="muted" style="margin:0">${escapeHtml(t().idField)}</p><div><p>${escapeHtml(t().idHelp)}</p><div class="idbox mono">${escapeHtml(id)}</div></div></div>
+        <div class="field"><p class="muted" style="margin:0">${escapeHtml(t().checkField)}</p><div>
+          <p>${escapeHtml(t().checkIntro)}</p>
+          ${verifyError ? `<p class="warn">${escapeHtml(verifyError)}</p>` : `
+            ${check(sig, t().checkSig, t().checkSigHint)}
+            ${check(hash, t().checkHash, t().checkHashHint)}
+            ${check(mid, t().checkId, t().checkIdHint)}`}
+          ${overall?`<p>${escapeHtml(t().checkOk)}</p>`:""}
+        </div></div>
+        <div class="field"><p class="muted" style="margin:0">${escapeHtml(t().timeField)}</p><div>
+          <p><strong>${escapeHtml(third?t().timeThird:t().timeLocal)}</strong></p>
+          <p class="muted">${escapeHtml(third?t().timeThirdHint:t().timeLocalHint)}</p>
+          <p class="hint">${escapeHtml(t().recordedAt)} ${escapeHtml(when(verify && verify.timestamp && verify.timestamp.captured_at || captured))}</p>
+        </div></div>
+        ${historyBlock(hist.versions, hist.conflictCount, hist.versions.length>1)}
+      </div>`;
+      bindSigner(out);
+    }
+
+    function paintChrome() {
+      document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+      document.getElementById("nodeLabel").textContent = t().node;
+      document.getElementById("title").textContent = t().title;
+      document.getElementById("lede").textContent = t().lede;
+      document.getElementById("zhBtn").className = lang === "zh" ? "on" : "";
+      document.getElementById("enBtn").className = lang === "en" ? "on" : "";
+      document.getElementById("tabs").innerHTML = [
+        ["url", t().tabUrl], ["text", t().tabText], ["file", t().tabFile], ["voice", t().tabVoice]
+      ].map(([id, label]) => `<button type="button" data-mode="${id}" class="${mode===id?"on":""}">${escapeHtml(label)}</button>`).join("");
+      const ident = `<label>${escapeHtml(t().identLabel)}</label><input id="ident" type="text" /><p class="hint">${escapeHtml(t().identHint)}</p>`;
+      let body = "";
+      if (mode === "url") body = `<label>${escapeHtml(t().urlLabel)}</label><input id="url" type="url" value="https://example.com" /><p class="hint">${escapeHtml(t().urlHint)}</p>`;
+      if (mode === "text") body = `<label>${escapeHtml(t().textLabel)}</label><textarea id="text"></textarea><p class="hint">${escapeHtml(t().textHint)}</p>` + ident;
+      if (mode === "file") body = `<label>${escapeHtml(t().fileLabel)}</label><input id="file" type="file" accept="image/*,application/pdf,text/plain,audio/*,.png,.jpg,.jpeg,.webp,.gif,.pdf,.txt,.mp3,.wav,.webm,.m4a" /><p class="hint">${escapeHtml(t().fileHint)}</p>` + ident;
+      if (mode === "voice") body = `<p class="kicker">${escapeHtml(t().voiceLabel)}</p><div class="row"><button type="button" class="solid" id="rec">${escapeHtml(t().voiceStart)}</button></div><p id="recState" class="hint"></p><p class="hint">${escapeHtml(t().voiceHint)}</p>` + ident;
+      form.innerHTML = body + `<div class="row"><span></span><button class="solid" id="go" type="submit">${escapeHtml(t().submit)}</button></div><p id="localErr" class="warn"></p>`;
+      document.getElementById("tabs").onclick = (e) => {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+        mode = btn.getAttribute("data-mode");
+        out.innerHTML = "";
+        paintChrome();
+      };
+      const rec = document.getElementById("rec");
+      if (rec) rec.onclick = async () => {
+        if (recorder && recorder.state === "recording") { recorder.stop(); return; }
+        if (!navigator.mediaDevices || !window.MediaRecorder) { document.getElementById("localErr").textContent = t().failVoice; return; }
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        chunks = []; voiceBlob = null;
+        recorder = new MediaRecorder(stream);
+        recorder.ondataavailable = (ev) => { if (ev.data.size) chunks.push(ev.data); };
+        recorder.onstop = () => { stream.getTracks().forEach((tr) => tr.stop()); voiceBlob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" }); rec.textContent = t().voiceStart; document.getElementById("recState").textContent = t().voiceReady; };
+        recorder.start();
+        rec.textContent = t().voiceStop;
+        rec.className = "danger";
+      };
+      loadTakedowns();
     }
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const url = urlInput.value.trim();
-      if (!looksLikeHttpUrl(url)) {
-        out.innerHTML = `<p class="warn" style="margin-top:1rem">请输入以 http:// 或 https:// 开头的完整网址。</p>`;
-        return;
+      const err = document.getElementById("localErr");
+      const go = document.getElementById("go");
+      err.textContent = "";
+      let request;
+      if (mode === "url") {
+        const url = (document.getElementById("url").value || "").trim();
+        if (!looksLikeHttpUrl(url)) { err.textContent = t().failUrl; return; }
+        request = fetch(API + "/v1/captures", { method:"POST", headers:{ "content-type":"application/json" }, body: JSON.stringify({ url, archive_format:"wacz", resource_type:"html" }) });
+      } else if (mode === "text") {
+        const text = (document.getElementById("text").value || "").trim();
+        if (!text) { err.textContent = t().textNeed; return; }
+        const object_identifier = (document.getElementById("ident").value || "").trim() || null;
+        request = fetch(API + "/v1/captures/text", { method:"POST", headers:{ "content-type":"application/json" }, body: JSON.stringify({ text, object_identifier }) });
+      } else if (mode === "file") {
+        const file = document.getElementById("file").files[0];
+        if (!file) { err.textContent = t().fileNeed; return; }
+        if (file.size > 10*1024*1024) { err.textContent = t().failFile; return; }
+        const object_identifier = (document.getElementById("ident").value || "").trim() || null;
+        const buf = await file.arrayBuffer();
+        request = fetch(API + "/v1/captures/file", { method:"POST", headers:{ "content-type":"application/json" }, body: JSON.stringify({ content_b64: toBase64(buf), filename: file.name, object_identifier }) });
+      } else {
+        if (!voiceBlob) { err.textContent = t().voiceNeed; return; }
+        if (voiceBlob.size > 10*1024*1024) { err.textContent = t().failFile; return; }
+        const object_identifier = (document.getElementById("ident").value || "").trim() || null;
+        const buf = await voiceBlob.arrayBuffer();
+        request = fetch(API + "/v1/captures/file", { method:"POST", headers:{ "content-type":"application/json" }, body: JSON.stringify({ content_b64: toBase64(buf), filename: "voice.webm", object_identifier }) });
       }
-      go.disabled = true;
-      go.textContent = "登记中";
-      out.innerHTML = `<div class="panel"><p class="kicker">处理中</p><h2>正在抓取并签字</h2><p class="muted">通常十几秒，请不要关掉页面。</p></div>`;
+      go.disabled = true; go.textContent = t().submitting;
+      out.innerHTML = `<div class="panel"><p class="kicker">${escapeHtml(t().workingTitle)}</p><p class="muted">${escapeHtml(t().workingBody)}</p></div>`;
       try {
-        const capRes = await fetch(API + "/v1/captures", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ url, archive_format: "wacz", resource_type: "html" }),
-        });
+        const res = await request;
         let payload = null;
-        try { payload = await capRes.json(); } catch {
-          throw new Error("节点返回了无法阅读的内容。请稍后再试。");
-        }
-        if (capRes.status === 422 && payload && payload.detail && payload.detail.reason === "TIMESTAMP_EVIDENCE_REQUIRED") {
-          const n = payload.detail.prior_observation_count;
-          const objectId = payload.detail.object_id;
-          const hist = await loadHistory(objectId);
-          const first = hist.versions[0];
-          out.innerHTML = `<div class="panel">
-            <p class="kicker">未写入新卷</p>
-            <h2>这份内容以前已经登记过了</h2>
-            <p>节点拒绝再写一条“新时间”。这不是故障。同一页被重新签字、换一个时间交上来，系统会拦住——这正是它在防止时间被悄悄改掉。</p>
-            <p class="muted">第一次记录仍然有效。如果确实需要再记一次，必须带上独立时间戳服务的盖章。</p>
-            ${n != null ? `<p class="mono muted">库里已有 ${n} 条同一内容的记录</p>` : ""}
-            <div class="field"><p class="muted" style="margin:0">签名者</p><div>${signerBlock(first && first.signer)}</div></div>
-            ${historyBlock(hist.versions, hist.conflictCount, true)}
-          </div>`;
-          bindSignerExpand(out);
-          return;
-        }
-        if (!capRes.ok) {
-          const msg = (payload && (payload.detail?.detail || payload.detail || payload.message)) || ("提交失败（" + capRes.status + "）。");
-          throw new Error(typeof msg === "string" ? msg : JSON.stringify(msg));
-        }
-        const id = payload.observation_id;
-        const page = payload.manifest?.object?.canonical_url || url;
-        const captured = payload.manifest?.capture?.captured_at;
-        const signer = signerFromManifest(payload.manifest);
-        let verify = null, verifyError = null;
-        try {
-          const vRes = await fetch(API + "/v1/verify/" + encodeURIComponent(id));
-          if (!vRes.ok) verifyError = "核对接口返回 " + vRes.status + "，记录已保存，但这一步没完成。";
-          else verify = await vRes.json();
-        } catch {
-          verifyError = "记录已经写下，但核对这一步暂时连不上节点。";
-        }
-        const objectId = payload.manifest?.object?.object_id;
-        const hist = await loadHistory(objectId);
-        const sig = verify?.manifest?.signature_valid === true;
-        const hash = verify?.archive_hash_valid === true && verify?.raw_content_hash_valid === true && verify?.raw_content_bytes_valid === true;
-        const mid = verify?.manifest?.manifest_id_valid === true;
-        const overall = verify?.status === "VALID";
-        const kind = verify?.timestamp?.kind || payload.timestamp_evidence?.kind;
-        const third = kind === "rfc3161";
-        out.innerHTML = `<div class="panel">
-          <div class="row" style="margin:0">
-            <div><p class="kicker">卷宗</p><h2>已写入节点</h2></div>
-            <p class="${overall ? "ok" : "muted"}" style="width:auto;flex:none">${overall ? "核对通过" : verify ? "核对未完全通过" : "已写下，待核对"}</p>
-          </div>
-          <div class="field"><p class="muted" style="margin:0">网址</p><div><p class="mono">${escapeHtml(page)}</p><p class="hint">${escapeHtml(when(captured))}</p></div></div>
-          <div class="field"><p class="muted" style="margin:0">签名者</p><div>${signerBlock(signer)}</div></div>
-          <div class="field"><p class="muted" style="margin:0">记录编号</p><div>
-            <p>这串编号是这份记录的身份证。之后用它核对内容有没有被改、签字还在不在。它不是网址，也不是密码。</p>
-            <div class="idbox mono">${escapeHtml(id)}</div></div></div>
-          <div class="field"><p class="muted" style="margin:0">核对</p><div>
-            <p>系统在问三件事：签字是否对得上、抓下来的内容有没有被改过、编号是否对得上这份内容。</p>
-            ${verifyError ? `<p class="warn">${escapeHtml(verifyError)}</p>` : `
-              ${check(sig, "签字对得上", "这份记录确实是这个节点签过的，后来没有换成别人的签字。")}
-              ${check(hash, "内容没有被改过", "现在存着的页面内容和当初抓下来的那一份对得上。")}
-              ${check(mid, "编号对得上这份内容", "记录编号是从内容算出来的，对得上说明没有张冠李戴。")}
-            `}
-            ${overall ? `<p>可以这样理解：这份内容，确实是从这个网址、在上面这个时间点被记录下来的，之后没有被改过。</p>` : ""}
-          </div></div>
-          <div class="field"><p class="muted" style="margin:0">时间</p><div>
-            <p><strong>${third ? "第三方盖章时间" : "节点自己声明的时间"}</strong></p>
-            <p class="muted">${third
-              ? "这份记录除了节点自己签字，还拿到了独立时间戳服务的盖章。盖章时间由第三方给出，提交的人改不了。"
-              : "现在记下的时间，是这个公共测试节点自己说的。它能证明内容被签过名、没有被改过，但不能单独当成第三方时间证明。"}</p>
-            <p class="hint">记录时间 ${escapeHtml(when(verify?.timestamp?.captured_at || captured))}${third && verify?.timestamp?.tsa_time ? " · 盖章时间 " + escapeHtml(when(verify.timestamp.tsa_time)) : ""}</p>
-          </div></div>
-          ${historyBlock(hist.versions, hist.conflictCount, hist.versions.length > 1)}
-        </div>`;
-        bindSignerExpand(out);
-      } catch (err) {
-        const msg = err && err.message ? err.message : "连不上存证节点。请检查网络后重试。";
-        out.innerHTML = `<div class="panel"><p class="kicker">未完成</p><h2>这次没记成</h2><p class="muted">${escapeHtml(msg)}</p></div>`;
+        try { payload = await res.json(); } catch { throw new Error(t().failTitle); }
+        await afterCapture(res, payload);
+      } catch (ex) {
+        out.innerHTML = `<div class="panel"><p class="kicker">${escapeHtml(t().failTitle)}</p><p class="muted">${escapeHtml(ex.message || t().failTitle)}</p></div>`;
       } finally {
-        go.disabled = false;
-        go.textContent = "登记";
+        go.disabled = false; go.textContent = t().submit;
       }
     });
 
-    loadTakedowns();
+    async function loadTakedowns() {
+      try {
+        const res = await fetch(API + "/v1/takedown?limit=10");
+        if (!res.ok) throw new Error("bad");
+        const data = await res.json();
+        const records = Array.isArray(data.records) ? data.records : [];
+        const total = typeof data.total === "number" ? data.total : records.length;
+        let html = `<p class="kicker">${escapeHtml(t().boardKicker)}</p><h2>${escapeHtml(t().boardTitle)}</h2><p class="hint">${escapeHtml(t().boardHint)}</p>`;
+        if (!records.length) html += `<p>${escapeHtml(t().boardEmpty)}</p>`;
+        else {
+          html += records.map((row) => `<div class="td-item"><div class="row" style="margin:0"><p style="margin:0">${escapeHtml(statusLabel(row.status))} · ${escapeHtml(actionLabel(row.action))}</p><p class="hint">${escapeHtml(when(row.requested_at))}</p></div>
+            <p class="mono" style="margin:.45rem 0 0">${escapeHtml(row.request_id || "")}</p>
+            <p class="mono muted" style="margin:.2rem 0 0">${escapeHtml(row.target_object_id || "")}</p></div>`).join("");
+          html += `<p class="hint">${escapeHtml(t().boardCount.replace("{total}", String(total)).replace("{n}", String(records.length)))}</p>`;
+        }
+        takedownsEl.innerHTML = html;
+      } catch {
+        takedownsEl.innerHTML = `<p class="kicker">${escapeHtml(t().boardKicker)}</p><h2>${escapeHtml(t().boardTitle)}</h2><p class="warn">${escapeHtml(t().boardError)}</p>`;
+      }
+    }
+
+    document.getElementById("zhBtn").onclick = () => { lang = "zh"; localStorage.setItem("oin-lang","zh"); paintChrome(); };
+    document.getElementById("enBtn").onclick = () => { lang = "en"; localStorage.setItem("oin-lang","en"); paintChrome(); };
+    paintChrome();
   </script>
 </body>
 </html>
