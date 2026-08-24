@@ -1,16 +1,9 @@
-try:
-    try:
+from datetime import datetime, timezone
+
 try:
     from datetime import UTC
 except ImportError:
-    from datetime import timezone
     UTC = timezone.utc
-except ImportError:
-    from datetime import timezone
-    UTC = timezone.utc
-except ImportError:
-    import datetime as dt
-    UTC = dt.timezone.utc, datetime
 
 import pytest
 from cryptography.hazmat.primitives import serialization
@@ -19,7 +12,7 @@ from pydantic import ValidationError
 
 from oin.schema.v1 import InformationObject
 
-CONTENT_HASH = "sha256:" + "a" * 64
+CONTENT_HASH = "a" * 64
 
 
 def make_object(**overrides) -> InformationObject:
@@ -35,7 +28,6 @@ def make_object(**overrides) -> InformationObject:
         "issuer_pubkey": public_key,
         "observed_at": datetime(2026, 8, 21, 12, 0, tzinfo=UTC),
         "signature": "0" * 128,
-        "schema_version": "1.0",
         "supersedes": [],
         "witnesses": [],
         "metadata": {"title": "Example"},
@@ -59,6 +51,21 @@ def test_valid_object_creation_all_fields():
     assert obj.type == "dataset"
     assert obj.signature != "0" * 128
     assert obj.verify_signature()
+
+
+def test_new_optional_fields_default_and_accept_values():
+    obj = make_object()
+    assert obj.content_type is None
+    assert obj.canonical_id is None
+    filled = make_object(content_type="text/plain", canonical_id="memo-1")
+    assert filled.content_type == "text/plain"
+    assert filled.canonical_id == "memo-1"
+    assert filled.verify_signature()
+
+
+def test_unknown_extra_field_still_rejected():
+    with pytest.raises(ValidationError):
+        make_object(schema_version="1.0")
 
 
 def test_missing_required_fields_rejected():
@@ -147,6 +154,10 @@ def test_json_schema_output():
     assert "id" in schema["properties"]
     assert "content_hash" in schema["required"]
     assert schema["properties"]["source_uri"]["maxLength"] == 4096
+    assert "content_type" in schema["properties"]
+    assert "canonical_id" in schema["properties"]
+    assert "content_type" not in schema.get("required", [])
+    assert "canonical_id" not in schema.get("required", [])
     assert schema["properties"]["type"]["enum"] == [
         "webpage", "pdf", "dataset", "image", "video", "audio", "document",
         "news", "software", "git_repo", "sensor_data", "social_media", "public_record", "other",
