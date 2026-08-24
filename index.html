@@ -45,6 +45,7 @@
       font-size: .9rem; font-weight: 500; cursor: pointer; padding: 0 1.1rem;
     }
     button:disabled { opacity: .7; cursor: wait; }
+    .linkish { height: auto; min-width: 0; background: transparent; color: var(--accent); padding: 0; font-size: .9rem; }
     .row { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: space-between; align-items: center; margin-top: 1rem; }
     .hint { font-size: .75rem; color: var(--muted); line-height: 1.5; }
     .mono { font-family: "Source Code Pro", monospace; font-size: 12px; word-break: break-all; }
@@ -55,12 +56,15 @@
     .bad { color: var(--warn); width: 2.5rem; flex: 0 0 2.5rem; }
     .warn { color: var(--warn); font-size: .9rem; }
     .muted { color: var(--muted); }
+    details.fold > summary { cursor: pointer; list-style: none; padding: 1.15rem 0; font-size: .9rem; border-top: 1px solid var(--line); }
+    details.fold > summary::-webkit-details-marker { display: none; }
+    .td-item { padding: 1rem 0; border-top: 1px solid var(--line); }
     @media (min-width: 640px) {
       h1 { font-size: 2.25rem; }
       form { padding: 1.5rem; }
       .field { grid-template-columns: 7.5rem minmax(0,1fr); gap: 1.5rem; }
     }
-    @media (max-width: 420px) { button { width: 100%; } }
+    @media (max-width: 420px) { #go { width: 100%; } }
   </style>
 </head>
 <body>
@@ -82,6 +86,7 @@
       </div>
     </form>
     <div id="out"></div>
+    <section id="takedowns" class="sheet" style="padding:1.5rem 2rem 1rem"></section>
   </div>
   <script>
     const API = "https://oin.timfi.top";
@@ -89,6 +94,7 @@
     const out = document.getElementById("out");
     const go = document.getElementById("go");
     const urlInput = document.getElementById("url");
+    const takedownsEl = document.getElementById("takedowns");
 
     function looksLikeHttpUrl(value) {
       try {
@@ -98,7 +104,8 @@
     }
     function when(v) {
       if (!v) return "未知时间";
-      const d = new Date(v);
+      const hasZone = /Z$|[+-]\d{2}:?\d{2}$/.test(v);
+      const d = new Date(hasZone ? v : v + "Z");
       if (Number.isNaN(d.getTime())) return v;
       return new Intl.DateTimeFormat("zh-CN", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(d) + " UTC";
     }
@@ -107,6 +114,58 @@
     }
     function check(ok, label, hint) {
       return `<div class="check"><span class="${ok ? "ok" : "bad"}">${ok ? "通过" : "未过"}</span><div><strong>${label}</strong><div class="hint">${hint}</div></div></div>`;
+    }
+    function abbreviateKey(value) {
+      const text = (value || "").trim();
+      if (text.length <= 16) return text;
+      return text.slice(0, 8) + "…" + text.slice(-8);
+    }
+    function signerFromManifest(manifest) {
+      if (!manifest) return "";
+      if (manifest.issuer_pubkey) return String(manifest.issuer_pubkey);
+      if (manifest.observer && manifest.observer.public_key) return String(manifest.observer.public_key);
+      if (manifest.observer && manifest.observer.issuer_pubkey) return String(manifest.observer.issuer_pubkey);
+      return "";
+    }
+    function statusLabel(v) {
+      return ({ pending: "待处理", accepted: "已受理", rejected: "已拒绝", completed: "已完成" }[v] || v || "未知");
+    }
+    function actionLabel(v) {
+      return ({ hide: "隐藏", remove: "删除", tombstone: "标记下架" }[v] || v || "未知");
+    }
+    function previewContent(value) {
+      const text = (value || "").trim();
+      if (!text) return "（无摘要）";
+      return text.length <= 20 ? text : text.slice(0, 20);
+    }
+
+    async function loadTakedowns() {
+      try {
+        const res = await fetch(API + "/v1/takedown?limit=10");
+        if (!res.ok) throw new Error("下架列表返回 " + res.status);
+        const data = await res.json();
+        const records = Array.isArray(data.records) ? data.records : [];
+        const total = typeof data.total === "number" ? data.total : records.length;
+        let html = `<p class="muted" style="font-size:.9rem;margin:0">公共节点</p><h2>下架请求记录</h2><p class="muted">只显示编号、对象、时间、状态和动作，不展示申请人身份和理由。</p>`;
+        if (!records.length) {
+          html += `<p>下架请求功能已就绪，尚无真实下架案例</p>`;
+        } else {
+          html += records.map((row) => `
+            <div class="td-item">
+              <div class="row" style="margin:0">
+                <p style="margin:0">${escapeHtml(statusLabel(row.status))} · ${escapeHtml(actionLabel(row.action))}</p>
+                <p class="hint" style="margin:0">${escapeHtml(when(row.requested_at))}</p>
+              </div>
+              <p class="mono" style="margin:.5rem 0 0">${escapeHtml(row.request_id || "（无编号）")}</p>
+              <p class="mono muted" style="margin:.25rem 0 0">${escapeHtml(row.target_object_id || "（无对象编号）")}</p>
+            </div>
+          `).join("");
+          html += `<p class="hint">共 ${total} 条，这里显示最近 ${records.length} 条。</p>`;
+        }
+        takedownsEl.innerHTML = html;
+      } catch (err) {
+        takedownsEl.innerHTML = `<p class="muted" style="font-size:.9rem;margin:0">公共节点</p><h2>下架请求记录</h2><p class="warn">连不上节点，暂时读不到下架记录。</p>`;
+      }
     }
 
     form.addEventListener("submit", async (e) => {
@@ -147,6 +206,7 @@
         const id = payload.observation_id;
         const page = payload.manifest?.object?.canonical_url || url;
         const captured = payload.manifest?.capture?.captured_at;
+        const signer = signerFromManifest(payload.manifest);
         let verify = null, verifyError = null;
         try {
           const vRes = await fetch(API + "/v1/verify/" + encodeURIComponent(id));
@@ -155,18 +215,62 @@
         } catch {
           verifyError = "记录已经写下，但核对这一步暂时连不上节点。";
         }
+        const objectId = payload.manifest?.object?.object_id;
+        let versions = [];
+        let conflictCount = 0;
+        if (objectId) {
+          try {
+            const cRes = await fetch(API + "/v1/objects/" + encodeURIComponent(objectId) + "/conflicts");
+            if (cRes.ok) {
+              const cJson = await cRes.json();
+              if (Array.isArray(cJson)) conflictCount = cJson.length;
+            }
+          } catch {}
+          try {
+            const oRes = await fetch(API + "/v1/objects/" + encodeURIComponent(objectId) + "/observations");
+            if (oRes.ok) {
+              const oJson = await oRes.json();
+              if (Array.isArray(oJson)) {
+                versions = oJson.map((item) => ({
+                  observationId: item.observation_id || "",
+                  capturedAt: item.capture && item.capture.captured_at,
+                  signer: signerFromManifest(item),
+                  contentPreview: previewContent((item.content && item.content.raw_content_hash) || (item.object && item.object.canonical_url) || ""),
+                })).filter((row) => row.observationId).sort((a, b) => String(b.capturedAt || "").localeCompare(String(a.capturedAt || "")));
+              }
+            }
+          } catch {}
+        }
         const sig = verify?.manifest?.signature_valid === true;
         const hash = verify?.archive_hash_valid === true && verify?.raw_content_hash_valid === true && verify?.raw_content_bytes_valid === true;
         const mid = verify?.manifest?.manifest_id_valid === true;
         const overall = verify?.status === "VALID";
         const kind = verify?.timestamp?.kind || payload.timestamp_evidence?.kind;
         const third = kind === "rfc3161";
+        const signerBlock = signer
+          ? `<p>签名者：<span class="mono">${escapeHtml(abbreviateKey(signer))}</span></p>
+             <button type="button" class="linkish" data-full="${escapeHtml(signer)}">点击展开完整公钥</button>
+             <p class="mono signer-full" style="display:none;margin-top:.5rem"></p>`
+          : `<p class="muted">这次返回里没有签名者公钥。</p>`;
+        const historyBlock = `
+          <details class="fold">
+            <summary>该记录的历史版本（共 ${versions.length} 个版本）</summary>
+            ${versions.length ? versions.map((row) => `
+              <div class="td-item">
+                <p style="margin:0">${escapeHtml(when(row.capturedAt))}</p>
+                <p class="mono muted" style="margin:.35rem 0 0">签名者 ${escapeHtml(row.signer ? abbreviateKey(row.signer) : "未知")}</p>
+                <p class="mono muted" style="margin:.25rem 0 0">内容摘要 ${escapeHtml(row.contentPreview)}</p>
+              </div>
+            `).join("") : `<p class="muted">暂时没有读到历史版本。</p>`}
+            ${conflictCount > 0 ? `<p class="hint">节点里另有 ${conflictCount} 组版本对照记录。</p>` : ""}
+          </details>`;
         out.innerHTML = `<div class="sheet" style="padding:1.5rem 2rem 2rem">
           <div style="display:flex;justify-content:space-between;gap:1rem">
             <div><p class="muted" style="font-size:.9rem;margin:0">记录</p><h2>已写入节点</h2></div>
             <p style="color:${overall ? "var(--verify)" : "var(--muted)"};font-size:.9rem">${overall ? "核对通过" : verify ? "核对未完全通过" : "已写下，待核对"}</p>
           </div>
           <div class="field"><p class="muted" style="margin:0">网址</p><div><p class="mono">${escapeHtml(page)}</p><p class="hint">${escapeHtml(when(captured))}</p></div></div>
+          <div class="field"><p class="muted" style="margin:0">签名者</p><div>${signerBlock}</div></div>
           <div class="field"><p class="muted" style="margin:0">记录编号</p><div>
             <p>这串编号是这份记录的身份证。之后用它来核对内容有没有被改、签字还在不在。它不是网址，也不是密码。</p>
             <div class="idbox mono">${escapeHtml(id)}</div></div></div>
@@ -186,7 +290,18 @@
               : "现在记下的时间，是这个公共测试节点自己说的。它能证明内容被签过名、没有被改过，但不能单独当成第三方时间证明。"}</p>
             <p class="hint">记录时间 ${escapeHtml(when(verify?.timestamp?.captured_at || captured))}${third && verify?.timestamp?.tsa_time ? " · 盖章时间 " + escapeHtml(when(verify.timestamp.tsa_time)) : ""}</p>
           </div></div>
+          ${historyBlock}
         </div>`;
+        const expand = out.querySelector(".linkish");
+        if (expand) {
+          expand.addEventListener("click", () => {
+            const full = out.querySelector(".signer-full");
+            const showing = full.style.display !== "none";
+            full.style.display = showing ? "none" : "block";
+            full.textContent = expand.getAttribute("data-full") || "";
+            expand.textContent = showing ? "点击展开完整公钥" : "收起完整公钥";
+          });
+        }
       } catch (err) {
         const msg = err && err.message ? err.message : "连不上存证节点。请检查网络后重试。";
         out.innerHTML = `<div class="sheet" style="padding:1.25rem 1.5rem"><p><strong>这次没记成</strong></p><p class="muted">${escapeHtml(msg)}</p></div>`;
@@ -195,6 +310,8 @@
         go.textContent = "记录这个页面";
       }
     });
+
+    loadTakedowns();
   </script>
 </body>
 </html>
