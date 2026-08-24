@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OIN Record</title>
+  <meta name="description" content="把一个网页记下来，并核对这份记录有没有被改过。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #dce4ec; --surface: #f5f7f9; --ink: #142033; --muted: #5a6a7a;
+      --line: #c4ced8; --verify: #1f6a52; --verify-soft: #d9ece5;
+      --held: #2e4a8c; --held-soft: #e4e9f4; --warn: #8a3a22; --warn-soft: #f3e4dc;
+      --spine: #b4232c;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-font-smoothing: antialiased; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font-family: "IBM Plex Sans", "Noto Sans SC", sans-serif;
+      background-image:
+        linear-gradient(to right, rgb(20 32 51 / 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgb(20 32 51 / 0.035) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .wrap { max-width: 42rem; margin: 0 auto; padding: 2.5rem 1rem 4rem; }
+    h1 { font-family: Syne, "Noto Sans SC", sans-serif; font-size: 2.6rem; margin: .4rem 0; }
+    .kicker { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .2em; color: var(--muted); }
+    .lede { color: var(--muted); line-height: 1.7; max-width: 28rem; }
+    form { background: var(--surface); border: 1px solid var(--line); padding: 1.1rem; }
+    label { font-size: .9rem; font-weight: 500; }
+    input {
+      width: 100%; height: 48px; margin-top: .5rem; border: 1px solid var(--line);
+      background: var(--bg); padding: 0 .75rem; font-family: "IBM Plex Mono", monospace; font-size: .9rem;
+    }
+    button {
+      height: 48px; min-width: 11rem; border: 0; background: var(--ink); color: var(--surface);
+      font-family: Syne, sans-serif; font-weight: 700; cursor: pointer;
+    }
+    button:disabled { opacity: .7; cursor: wait; }
+    .row { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: space-between; align-items: center; margin-top: 1rem; }
+    .hint { font-size: .75rem; color: var(--muted); }
+    .docket { margin-top: 1.25rem; background: var(--surface); border: 1px solid var(--line); display: flex; }
+    .spine { width: 6px; background: var(--spine); flex: 0 0 6px; }
+    .spine.held { background: var(--held); }
+    .body { flex: 1; min-width: 0; }
+    .pad { padding: 1.1rem 1.25rem; }
+    .mono { font-family: "IBM Plex Mono", monospace; font-size: 12px; word-break: break-all; }
+    .idbox { background: var(--bg); padding: .6rem .75rem; margin-top: .6rem; }
+    .ok { color: var(--verify); }
+    .warn { background: var(--warn-soft); color: var(--warn); padding: .75rem 1rem; border: 1px solid #e0c4b8; }
+    .stamp { display: inline-block; border: 1px solid var(--verify); color: var(--verify); background: var(--verify-soft); padding: .2rem .5rem; font-family: Syne, sans-serif; font-size: .7rem; letter-spacing: .12em; }
+    .check { list-style: none; padding: 0; }
+    .check li { display: flex; gap: .7rem; padding: .7rem 0; border-bottom: 1px solid var(--line); }
+    .mark { width: 1.4rem; height: 1.4rem; display: grid; place-items: center; background: var(--verify-soft); color: var(--verify); flex: 0 0 1.4rem; }
+    .mark.bad { background: var(--warn-soft); color: var(--warn); }
+    .ts { background: var(--verify-soft); padding: 1rem 1.25rem; }
+    .ts.held { background: var(--held-soft); }
+    @media (max-width: 420px) { h1 { font-size: 2rem; } button { width: 100%; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="kicker">OIN PUBLIC TEST NODE</p>
+    <h1>OIN Record</h1>
+    <p class="lede">贴一个网页地址。节点会把它记下来，并告诉你：签字在不在、内容有没有被改过、时间是谁说的。</p>
+    <form id="form">
+      <label for="url">要记录的网址</label>
+      <input id="url" value="https://example.com" inputmode="url" autocomplete="off" spellcheck="false" />
+      <div class="row">
+        <p class="hint">公共测试节点，不保证一直在线，请勿当作生产存证。</p>
+        <button id="go" type="submit">记录这个页面</button>
+      </div>
+    </form>
+    <div id="out"></div>
+  </div>
+  <script>
+    const API = "https://oin.timfi.top";
+    const form = document.getElementById("form");
+    const out = document.getElementById("out");
+    const go = document.getElementById("go");
+    const urlInput = document.getElementById("url");
+
+    function looksLikeHttpUrl(value) {
+      try {
+        const u = new URL(value.trim());
+        return (u.protocol === "http:" || u.protocol === "https:") && !!u.hostname;
+      } catch { return false; }
+    }
+    function when(v) {
+      if (!v) return "未知时间";
+      const d = new Date(v);
+      if (Number.isNaN(d.getTime())) return v;
+      return new Intl.DateTimeFormat("zh-CN", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(d) + " UTC";
+    }
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&", "<": "<", ">": ">", '"': """, "'": "&#39;" }[c]));
+    }
+    function check(ok, label, hint) {
+      return `<li><span class="mark ${ok ? "" : "bad"}">${ok ? "✓" : "!"}</span><div><strong>${label}</strong><div class="hint">${hint}</div></div></li>`;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const url = urlInput.value.trim();
+      if (!looksLikeHttpUrl(url)) {
+        out.innerHTML = `<p class="warn">请输入以 http:// 或 https:// 开头的完整网址。</p>`;
+        return;
+      }
+      go.disabled = true;
+      go.textContent = "正在记录";
+      out.innerHTML = `<div class="docket"><div class="spine"></div><div class="pad">正在抓取并签字。通常十几秒，请不要关掉页面。</div></div>`;
+      try {
+        const capRes = await fetch(API + "/v1/captures", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ url, archive_format: "wacz", resource_type: "html" }),
+        });
+        let payload = null;
+        try { payload = await capRes.json(); } catch {
+          throw new Error("节点返回了无法阅读的内容。请稍后再试。");
+        }
+        if (capRes.status === 422 && payload && payload.detail && payload.detail.reason === "TIMESTAMP_EVIDENCE_REQUIRED") {
+          const n = payload.detail.prior_observation_count;
+          out.innerHTML = `<div class="docket"><div class="spine held"></div><div class="body pad">
+            <p class="kicker" style="color:var(--held)">HELD · 系统拦住了重写</p>
+            <h2>这份内容以前已经记过了</h2>
+            <p>节点拒绝再写一条“新时间”的记录。这不是故障。有人如果把同一页内容重新签一次、换一个时间再交上来，系统会拦住——这正是它在防止时间被悄悄改掉。</p>
+            <p class="hint">第一次记录仍然有效。如果确实需要再记一次，必须带上独立时间戳服务的盖章。</p>
+            ${n != null ? `<p class="mono" style="color:var(--held)">库里已有 ${n} 条同一内容的记录</p>` : ""}
+          </div></div>`;
+          return;
+        }
+        if (!capRes.ok) {
+          const msg = (payload && (payload.detail?.detail || payload.detail || payload.message)) || ("提交失败（" + capRes.status + "）。");
+          throw new Error(typeof msg === "string" ? msg : JSON.stringify(msg));
+        }
+        const id = payload.observation_id;
+        const page = payload.manifest?.object?.canonical_url || url;
+        const captured = payload.manifest?.capture?.captured_at;
+        let verify = null, verifyError = null;
+        try {
+          const vRes = await fetch(API + "/v1/verify/" + encodeURIComponent(id));
+          if (!vRes.ok) verifyError = "核对接口返回 " + vRes.status + "，记录已保存，但这一步没完成。";
+          else verify = await vRes.json();
+        } catch {
+          verifyError = "记录已经写下，但核对这一步暂时连不上节点。";
+        }
+        const sig = verify?.manifest?.signature_valid === true;
+        const hash = verify?.archive_hash_valid === true && verify?.raw_content_hash_valid === true && verify?.raw_content_bytes_valid === true;
+        const mid = verify?.manifest?.manifest_id_valid === true;
+        const overall = verify?.status === "VALID";
+        const kind = verify?.timestamp?.kind || payload.timestamp_evidence?.kind;
+        const third = kind === "rfc3161";
+        out.innerHTML = `<div class="docket"><div class="spine"></div><div class="body">
+          <div class="pad" style="display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--line)">
+            <div><p class="kicker">DOCKET · 存证底稿</p><h2 style="margin:.3rem 0 0">记录完成</h2></div>
+            <span class="stamp">${overall ? "核对通过" : verify ? "核对未完全通过" : "已写下，待核对"}</span>
+          </div>
+          <div class="pad"><p class="kicker">01 提交</p><p>已把这个地址的页面抓下来并签字保存。</p>
+            <p class="mono" style="color:var(--held)">${escapeHtml(page)}</p>
+            <p class="hint">${escapeHtml(when(captured))}</p></div>
+          <div class="pad" style="border-top:1px solid var(--line)"><p class="kicker">02 记录编号</p>
+            <p>这串编号是这份记录的身份证。别人之后要用它来核对：内容有没有被改、签字还在不在。它不是网址，也不是密码。</p>
+            <div class="idbox mono">${escapeHtml(id)}</div></div>
+          <div class="pad" style="border-top:1px solid var(--line)"><p class="kicker">03 核对这份记录</p>
+            <p>系统在问三件事：签字是否对得上、抓下来的内容有没有被改过、编号是否对得上这份内容。</p>
+            ${verifyError ? `<p class="warn">${escapeHtml(verifyError)}</p>` : `<ul class="check">
+              ${check(sig, "签字对得上", "这份记录确实是这个节点签过的，后来没有换成别人的签字。")}
+              ${check(hash, "内容没有被改字节", "现在存着的页面内容和当初抓下来的那一份对得上。")}
+              ${check(mid, "编号对得上这份内容", "记录编号是从内容算出来的，对得上说明没有张冠李戴。")}
+            </ul>`}
+            ${overall ? `<p class="ok">可以这样理解：这份内容，确实是从这个网址、在上面这个时间点被记录下来的，之后没有被改过。</p>` : ""}
+          </div>
+          <div class="ts ${third ? "held" : ""}">
+            <p class="kicker">${third ? "第三方盖章时间" : "节点自己声明的时间"}</p>
+            <p>${third
+              ? "这份记录除了节点自己签字，还拿到了独立时间戳服务的盖章。盖章时间由第三方给出，提交的人改不了。"
+              : "现在记下的时间，是这个公共测试节点自己说的。它能证明内容被签过名、没有被改字节，但不能单独当成第三方时间证明。"}</p>
+            <p class="hint">记录时间 ${escapeHtml(when(verify?.timestamp?.captured_at || captured))}${third && verify?.timestamp?.tsa_time ? " · 盖章时间 " + escapeHtml(when(verify.timestamp.tsa_time)) : ""}</p>
+          </div>
+        </div></div>`;
+      } catch (err) {
+        const msg = err && err.message ? err.message : "连不上存证节点。请检查网络后重试。";
+        out.innerHTML = `<p class="warn"><strong style="color:var(--ink)">这次没记成</strong><br/>${escapeHtml(msg)}</p>`;
+      } finally {
+        go.disabled = false;
+        go.textContent = "记录这个页面";
+      }
+    });
+  </script>
+</body>
+</html>
