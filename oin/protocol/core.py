@@ -33,6 +33,14 @@ def object_id(canonical_url: str, resource_type: str) -> str:
     identity = f"{canonical_url}|{resource_type}".encode("utf-8")
     return f"oin:object:sha256:{hashlib.sha256(identity).hexdigest()}"
 
+
+OBJECT_ID_PATTERN = re.compile(r"^oin:object:sha256:([0-9a-fA-F]{64})$")
+
+
+def looks_like_object_id(value: str) -> bool:
+    """Return whether value matches the identifier produced by object_id()."""
+    return bool(isinstance(value, str) and OBJECT_ID_PATTERN.fullmatch(value))
+
 def observation_id(manifest: dict) -> str:
     payload = canonical_json(manifest)
     return f"oin:observation:sha256:{hashlib.sha256(payload).hexdigest()}"

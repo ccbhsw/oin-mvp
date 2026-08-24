@@ -10,6 +10,8 @@ from cryptography.hazmat.primitives import serialization
 
 from oin.schema import TakedownRequest
 
+VALID_OBJECT_ID = "oin:object:sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
+
 def test_takedown_creation_and_signature_valid():
     priv_key = Ed25519PrivateKey.generate()
     pub_key_hex = priv_key.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw).hex()
@@ -38,7 +40,7 @@ def test_takedown_signature_invalid_on_tamper():
 
     req = TakedownRequest(
         request_id="oin:request:sha256:1",
-        target_object_id="obj1",
+        target_object_id=VALID_OBJECT_ID,
         requester_pubkey=pub_key_hex,
         reason="copyright",
         requested_at=datetime(2026, 8, 22, 12, 0, 0, tzinfo=UTC),
@@ -59,7 +61,7 @@ def test_takedown_audit_mappings():
 
     # 1. verification_document 为空但 verified_basis 有值时合法
     req1 = TakedownRequest(
-        request_id="req1", target_object_id="obj1", requester_pubkey=pub_key_hex,
+        request_id="req1", target_object_id=VALID_OBJECT_ID, requester_pubkey=pub_key_hex,
         reason="r1", requested_at=datetime(2026, 8, 22, 12, 0, 0, tzinfo=UTC),
         verified_basis="court_order", verification_document=None,
         dispute_deadline=None, signature="0" * 128
@@ -69,7 +71,7 @@ def test_takedown_audit_mappings():
 
     # 2. post_dispute_record 在 dispute_deadline=None 时可写入
     req2 = TakedownRequest(
-        request_id="req2", target_object_id="obj2", requester_pubkey=pub_key_hex,
+        request_id="req2", target_object_id=VALID_OBJECT_ID, requester_pubkey=pub_key_hex,
         reason="r2", requested_at=datetime(2026, 8, 22, 12, 0, 0, tzinfo=UTC),
         verified_basis="regulatory_notice", dispute_deadline=None,
         post_dispute_record="Case closed by regulator", signature="0" * 128
@@ -80,7 +82,7 @@ def test_takedown_audit_mappings():
     # 3. verified_by 单独存在、verified_basis 为 None 时仍要求 dispute_deadline 有值
     with pytest.raises(ValidationError) as exc_info:
         TakedownRequest(
-            request_id="req3", target_object_id="obj3", requester_pubkey=pub_key_hex,
+            request_id="req3", target_object_id=VALID_OBJECT_ID, requester_pubkey=pub_key_hex,
             reason="r3", requested_at=datetime(2026, 8, 22, 12, 0, 0, tzinfo=UTC),
             verified_by="admin", verified_basis=None, dispute_deadline=None, signature="0" * 128
         )
@@ -88,7 +90,7 @@ def test_takedown_audit_mappings():
 
     # 4. verified_basis 有值时 dispute_deadline=None 合法
     req4 = TakedownRequest(
-        request_id="req4", target_object_id="obj4", requester_pubkey=pub_key_hex,
+        request_id="req4", target_object_id=VALID_OBJECT_ID, requester_pubkey=pub_key_hex,
         reason="r4", requested_at=datetime(2026, 8, 22, 12, 0, 0, tzinfo=UTC),
         verified_basis="law_enforcement_request", dispute_deadline=None, signature="0" * 128
     )
@@ -97,7 +99,7 @@ def test_takedown_audit_mappings():
     # 5. verified_basis 为 None 时 dispute_deadline=None 报错
     with pytest.raises(ValidationError) as exc_info:
         TakedownRequest(
-            request_id="req5", target_object_id="obj5", requester_pubkey=pub_key_hex,
+            request_id="req5", target_object_id=VALID_OBJECT_ID, requester_pubkey=pub_key_hex,
             reason="r5", requested_at=datetime(2026, 8, 22, 12, 0, 0, tzinfo=UTC),
             verified_basis=None, dispute_deadline=None, signature="0" * 128
         )
@@ -107,7 +109,7 @@ def test_takedown_audit_mappings():
     # 漏洞点：旧版本靠 illegal_content_report 绕过校验。现在应报错。
     with pytest.raises(ValidationError) as exc_info:
         TakedownRequest(
-            request_id="req6", target_object_id="obj6", requester_pubkey=pub_key_hex,
+            request_id="req6", target_object_id=VALID_OBJECT_ID, requester_pubkey=pub_key_hex,
             reason="r6", requested_at=datetime(2026, 8, 22, 12, 0, 0, tzinfo=UTC),
             request_type="illegal_content_report", verified_basis=None,
             dispute_deadline=None, signature="0" * 128
@@ -116,7 +118,7 @@ def test_takedown_audit_mappings():
 
     # 7. Optional 字段缺失时按 null 参与签名，篡改后验签失败
     req7 = TakedownRequest(
-        request_id="req7", target_object_id="obj7", requester_pubkey=pub_key_hex,
+        request_id="req7", target_object_id=VALID_OBJECT_ID, requester_pubkey=pub_key_hex,
         reason="r7", requested_at=datetime(2026, 8, 22, 12, 0, 0, tzinfo=UTC),
         dispute_deadline=datetime(2026, 9, 5, 12, 0, 0, tzinfo=UTC),
         signature="0" * 128
@@ -135,3 +137,19 @@ def test_json_schema_export_new_fields():
     assert "verified_by" in props
     assert "post_dispute_record" in props
     assert "request_type" in props
+
+
+def test_target_object_id_rejects_metadata_url():
+    priv_key = Ed25519PrivateKey.generate()
+    pub_key_hex = priv_key.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw).hex()
+    with pytest.raises(ValidationError) as exc_info:
+        TakedownRequest(
+            request_id="oin:request:sha256:" + "ab" * 32,
+            target_object_id="http://169.254.169.254/latest/meta-data/",
+            requester_pubkey=pub_key_hex,
+            reason="probe",
+            requested_at=datetime(2026, 8, 22, 12, 0, 0, tzinfo=UTC),
+            dispute_deadline=datetime(2026, 9, 5, 12, 0, 0, tzinfo=UTC),
+            signature="0" * 128,
+        )
+    assert "oin:object:sha256" in str(exc_info.value)

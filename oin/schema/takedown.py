@@ -12,6 +12,8 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey, Ed25519PrivateKey
 from cryptography.hazmat.primitives import serialization
 
+from oin.protocol.core import OBJECT_ID_PATTERN
+
 _HEX_64 = re.compile(r'^[0-9a-fA-F]{64}$')
 _HEX_128 = re.compile(r'^[0-9a-fA-F]{128}$')
 
@@ -64,6 +66,14 @@ class TakedownRequest(BaseModel):
             ]
         }
     }
+
+    @field_validator("target_object_id")
+    @classmethod
+    def validate_target_object_id(cls, value: str) -> str:
+        match = OBJECT_ID_PATTERN.fullmatch(value)
+        if not match:
+            raise ValueError("target_object_id must be an OIN object identifier (oin:object:sha256:<64-hex>)")
+        return f"oin:object:sha256:{match.group(1).lower()}"
 
     @field_validator("requester_pubkey")
     @classmethod

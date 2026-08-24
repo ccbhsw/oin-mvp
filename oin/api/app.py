@@ -10,7 +10,8 @@ from pathlib import Path
 from typing import Any
 
 import httpx
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -285,6 +286,21 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(RequestValidationError)
+async def request_validation_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+    if request.method == "POST" and request.url.path.rstrip("/") == "/v1/takedown":
+        for err in exc.errors():
+            loc = err.get("loc") or ()
+            if "target_object_id" in loc and err.get("type") != "missing":
+                return JSONResponse(
+                    status_code=400,
+                    content={
+                        "detail": "target_object_id must be an OIN object identifier (oin:object:sha256:<64-hex>)"
+                    },
+                )
+    return JSONResponse(status_code=422, content={"detail": exc.errors()})
 
 _REPLAY_WINDOW_SECONDS = 300
 _replay_cache: dict[str, float] = {}
