@@ -157,6 +157,7 @@ def ingest(
                     "reason": "TIMESTAMP_EVIDENCE_REQUIRED",
                     "detail": "重复内容再次提交必须提供第三方时间戳",
                     "raw_content_hash": content_hash,
+                    "object_id": priors[0].object_id,
                     "prior_observation_count": len(priors),
                     "timestamp_check": why,
                 },
@@ -463,8 +464,16 @@ def get_object(object_id: str) -> dict[str, Any]:
     observations = repo.observations_for_object(object_id)
     if not observations:
         raise HTTPException(status_code=404, detail="object not found")
-    first = observations[0].object
-    return {"object_id": object_id, "canonical_url": first.canonical_url, "resource_type": first.resource_type, "observation_count": len(observations)}
+    first = observations[0]
+    object_data = first.manifest.get("object") if isinstance(first.manifest, dict) else {}
+    if not isinstance(object_data, dict):
+        object_data = {}
+    return {
+        "object_id": object_id,
+        "canonical_url": object_data.get("canonical_url"),
+        "resource_type": object_data.get("resource_type"),
+        "observation_count": len(observations),
+    }
 
 
 @app.get("/v1/objects/{object_id}/observations")

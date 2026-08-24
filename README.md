@@ -11,16 +11,15 @@ OIN MVP 是一个**签名、可复制、冲突保留**的公共信息 Observatio
 
 ### 测试节点访问
 
-公共测试节点是 HTTP API，用命令行客户端访问，不是网站。macOS 终端、Windows PowerShell、Linux 均可。
+浏览器可以直接试用：
 
-浏览器请打开：
-
-- 状态：https://oin.timfi.top/healthz
+- 演示页：https://ccbhsw.github.io/oin-mvp/
+- 节点状态：https://oin.timfi.top/healthz
 - 接口文档：https://oin.timfi.top/docs
 
-根路径 https://oin.timfi.top/ 没有页面，会返回 `Not Found`。
+演示页用来贴一个网址、看签字和历史版本。根路径 https://oin.timfi.top/ 本身没有页面，会返回 `Not Found`。
 
-安装客户端：
+命令行客户端：
 
 ```bash
 pip install "git+https://github.com/ccbhsw/oin-mvp.git"
