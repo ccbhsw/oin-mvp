@@ -3,19 +3,12 @@
 from __future__ import annotations
 
 import os
-try:
-    try:
+from datetime import datetime, timedelta, timezone
+
 try:
     from datetime import UTC
 except ImportError:
-    from datetime import timezone
     UTC = timezone.utc
-except ImportError:
-    from datetime import timezone
-    UTC = timezone.utc
-except ImportError:
-    import datetime as dt
-    UTC = dt.timezone.utc, datetime, timedelta
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey

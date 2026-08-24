@@ -86,6 +86,12 @@ def unsigned_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
     return copied
 
 
+def manifest_for_observation_id(manifest: dict[str, Any]) -> dict[str, Any]:
+    copied = unsigned_manifest(manifest)
+    copied.pop("observation_id", None)
+    return copied
+
+
 def verify_archive_binding(manifest: dict[str, Any], archive: bytes) -> dict[str, bool]:
     """Verify both the immutable archive container and its declared HTTP response payload."""
     content = manifest.get("content", {})
@@ -107,7 +113,7 @@ def verify_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
     result = {"manifest_id_valid": False, "signature_valid": False, "errors": []}
     try:
         unsigned = unsigned_manifest(manifest)
-        expected = observation_id(unsigned)
+        expected = observation_id(manifest_for_observation_id(manifest))
         result["manifest_id_valid"] = expected == manifest.get("observation_id")
         if not result["manifest_id_valid"]:
             result["errors"].append("observation_id does not match canonical unsigned manifest")

@@ -4,19 +4,12 @@ from __future__ import annotations
 
 import hashlib
 import json
-try:
-    try:
+from datetime import datetime, timezone
+
 try:
     from datetime import UTC
 except ImportError:
-    from datetime import timezone
     UTC = timezone.utc
-except ImportError:
-    from datetime import timezone
-    UTC = timezone.utc
-except ImportError:
-    import datetime as dt
-    UTC = dt.timezone.utc, datetime
 
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey

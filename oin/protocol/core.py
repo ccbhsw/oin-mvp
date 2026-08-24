@@ -2,20 +2,12 @@ import base64
 import hashlib
 import json
 import re
-from datetime import datetime
-try:
-    try:
+from datetime import datetime, timezone
+
 try:
     from datetime import UTC
 except ImportError:
-    from datetime import timezone
     UTC = timezone.utc
-except ImportError:
-    from datetime import timezone
-    UTC = timezone.utc
-except ImportError:
-    import datetime as dt
-    UTC = dt.timezone.utc
 
 PROTOCOL_VERSION = "1.0"
 

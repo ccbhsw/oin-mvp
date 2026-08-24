@@ -30,7 +30,12 @@ from oin.identity.keys import load_private_key, write_keypair
 from oin.observation.service import build_observation, verify_archive_binding, verify_manifest
 from oin.schema.takedown import TakedownRequest
 from oin.storage.backends import FileStorage, S3Storage
-from oin.timestamp.rfc3161 import local_declaration, obtain_rfc3161_token
+from oin.timestamp.rfc3161 import (
+    describe_timestamp_evidence,
+    local_declaration,
+    obtain_rfc3161_token,
+    rfc3161_evidence_is_valid,
+)
 from oin.transparency.merkle import MerkleLog, verify_proof
 
 DATA_DIR = Path(os.getenv("OIN_DATA_DIR", "./data"))
@@ -133,6 +138,25 @@ def ingest(
     existing = repo.observation(manifest["observation_id"])
     if existing:
         return {"status": "already_present", "observation_id": manifest["observation_id"], "proof": repo.log_proof(manifest["observation_id"])}
+    content_hash = manifest["content"]["raw_content_hash"]
+    priors = [
+        item
+        for item in repo.observations_for_content_hash(content_hash)
+        if item.observation_id != manifest["observation_id"]
+    ]
+    if priors:
+        valid, why = rfc3161_evidence_is_valid(manifest, timestamp_evidence)
+        if not valid:
+            raise HTTPException(
+                status_code=422,
+                detail={
+                    "reason": "TIMESTAMP_EVIDENCE_REQUIRED",
+                    "detail": "重复内容再次提交必须提供第三方时间戳",
+                    "raw_content_hash": content_hash,
+                    "prior_observation_count": len(priors),
+                    "timestamp_check": why,
+                },
+            )
     key = archive_key(manifest)
     storage.put(key, archive)
     log.append(manifest)
@@ -396,6 +420,7 @@ def verify_observation(observation_id: str) -> dict[str, Any]:
     binding = verify_archive_binding(observation.manifest, storage.get(reference.locator))
     manifest_result = verify_manifest(observation.manifest)
     proof_valid = verify_proof(observation.manifest, proof) if proof else False
+    timestamp = describe_timestamp_evidence(observation.manifest, repo.timestamp_evidence(observation_id))
     return {
         "status": "VALID" if all(binding.values()) and manifest_result["valid"] and proof_valid else "INVALID",
         "archive_hash_valid": binding["archive_hash"],
@@ -403,6 +428,7 @@ def verify_observation(observation_id: str) -> dict[str, Any]:
         "raw_content_bytes_valid": binding["raw_content_bytes"],
         "manifest": manifest_result,
         "transparency_proof_valid": proof_valid,
+        "timestamp": timestamp,
     }
 
 

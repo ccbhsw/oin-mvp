@@ -215,6 +215,16 @@ class Repository:
         with self.session_factory() as session:
             return session.get(Observation, observation_id)
 
+    def observations_for_content_hash(self, raw_content_hash: str) -> list[Observation]:
+        with self.session_factory() as session:
+            return list(
+                session.scalars(
+                    select(Observation)
+                    .where(Observation.raw_content_hash == raw_content_hash)
+                    .order_by(Observation.captured_at)
+                )
+            )
+
     def observations_for_object(self, object_id: str) -> list[Observation]:
         with self.session_factory() as session:
             return list(session.scalars(select(Observation).where(Observation.object_id == object_id).order_by(Observation.captured_at)))

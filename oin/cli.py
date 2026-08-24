@@ -11,7 +11,7 @@ CONFIG_FILE = CONFIG_DIR / "config"
 
 LIMITATIONS_SUMMARY = """
 === OIN 已知限制摘要 ===
-1. 时间戳新鲜度校验缺失：当前协议对内部自洽的重签名 + 新时间戳无拦截能力，计划后续引入 RFC 3161 可信时间戳机制。
+1. 时间戳：同一 content_hash 再次提交必须带有效 RFC 3161 凭证。首次提交仍可用 Observer 本地时间声明；仅提交一次时，伪造 captured_at 仍无法被发现。
 2. 验证器异构性独立性待完全闭合：Node.js 验证器由同一执行上下文参考 Python 源码实现，待后续由独立执行者复现确认。
 =========================
 """
@@ -31,7 +31,7 @@ def get_config_endpoint(override_endpoint: str | None) -> str:
 def api_request(method: str, endpoint: str, path: str, **kwargs):
     url = f"{endpoint}{path}"
     try:
-        response = requests.request(method, url, timeout=15, **kwargs)
+        response = requests.request(method, url, timeout=60, **kwargs)
         return response
     except requests.exceptions.ConnectionError as exc:
         click.echo(f"错误: 无法连接到节点后端 ({url})。请检查 endpoint 是否正确以及服务是否启动。", err=True)
@@ -81,12 +81,15 @@ def init(endpoint):
 @cli.command()
 @click.argument("url")
 @click.option("--endpoint", help="指定 OIN 节点 endpoint")
-def submit(url, endpoint):
+@click.option("--tsa-url", help="可选 RFC 3161 TSA URL；同一内容再次提交时必须提供有效第三方时间戳")
+def submit(url, endpoint, tsa_url):
     """提交 URL 到 OIN 节点进行捕获、签名与发布"""
     ep = get_config_endpoint(endpoint)
     click.echo(f"正在向 {ep} 提交 URL: {url} ...")
-    
-    resp = api_request("POST", ep, "/v1/captures", json={"url": url, "archive_format": "wacz", "resource_type": "html"})
+    payload = {"url": url, "archive_format": "wacz", "resource_type": "html"}
+    if tsa_url:
+        payload["tsa_url"] = tsa_url
+    resp = api_request("POST", ep, "/v1/captures", json=payload)
     if resp.status_code == 201:
         data = resp.json()
         manifest = data.get("manifest", {})
@@ -180,6 +183,16 @@ def verify(identifier, endpoint, verbose, json_output):
         click.echo(f"  Signature Valid:        {sig_valid}")
         click.echo(f"  Manifest ID Valid:      {manifest_res.get('manifest_id_valid')}")
         click.echo(f"  Transparency Proof:     {merkle_valid}")
+        timestamp = result.get("timestamp") or {}
+        click.echo(f"  Timestamp Kind:         {timestamp.get('kind')}")
+        click.echo(f"  Timestamp Status:       {timestamp.get('status')}")
+        if timestamp.get("captured_at"):
+            click.echo(f"  Observer captured_at:   {timestamp.get('captured_at')}")
+        if timestamp.get("tsa_time"):
+            click.echo(f"  TSA time:               {timestamp.get('tsa_time')}")
+        vs = timestamp.get("captured_at_vs_tsa")
+        if vs:
+            click.echo(f"  captured_at vs TSA:     delta={vs.get('delta_seconds')}s close={vs.get('close')}")
         if manifest_res.get("errors"):
             click.echo(f"  Errors:                 {manifest_res.get('errors')}")
 
