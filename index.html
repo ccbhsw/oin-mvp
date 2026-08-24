@@ -3,90 +3,100 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OIN Record</title>
-  <meta name="description" content="把一个网页记下来，并核对这份记录有没有被改过。" />
+  <title>OIN 公共记录</title>
+  <meta name="description" content="把一个网页登记成可以回头核对的记录：签字、内容、时间分开看。" />
   <link rel="icon" href="favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600&family=Noto+Serif+SC:wght@500;600&family=Source+Code+Pro:wght@400;500&family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #e6e8e3; --surface: #f6f6f3; --ink: #1d211c; --muted: #61685e;
-      --line: #d2d5ce; --accent: #1e4a3d; --accent-fg: #f6f6f3;
-      --verify: #2a5a45; --held: #3d4a5c; --warn: #7a3e2e;
+      --bg: #ffffff;
+      --ink: #141414;
+      --mute: #5c5c5c;
+      --line: #141414;
+      --wash: #f4f4f4;
+      --stamp: #c1121f;
+      --ok: #0f6b3d;
+      --bad: #c1121f;
     }
     * { box-sizing: border-box; }
     html { -webkit-font-smoothing: antialiased; }
     body {
-      margin: 0; background: var(--bg); color: var(--ink);
-      font-family: "Source Sans 3", "Noto Sans SC", sans-serif;
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "IBM Plex Sans", "Noto Sans SC", sans-serif;
     }
-    header { border-bottom: 1px solid color-mix(in srgb, var(--line) 80%, transparent); }
-    .bar, .wrap { max-width: 42rem; margin: 0 auto; padding: 0 1.25rem; }
-    .bar { display: flex; justify-content: space-between; padding-top: 1rem; padding-bottom: 1rem; }
-    .wrap { padding-top: 2.5rem; padding-bottom: 4rem; }
-    h1 { font-family: "Source Serif 4", "Noto Serif SC", serif; font-weight: 500; font-size: 2rem; line-height: 1.3; letter-spacing: -0.02em; margin: 0; }
-    h2 { font-family: "Source Serif 4", "Noto Serif SC", serif; font-weight: 500; font-size: 1.5rem; margin: .25rem 0 0; letter-spacing: -0.02em; }
-    .lede { color: var(--muted); line-height: 1.7; max-width: 28rem; margin-top: 1rem; }
-    .sheet {
-      background: var(--surface); border-radius: 1.5rem; margin-top: 2rem;
-      box-shadow: 0 0 0 1px rgb(29 33 28 / .07), 0 1px 2px rgb(29 33 28 / .04), 0 8px 24px rgb(29 33 28 / .05);
+    .page { max-width: 40rem; margin: 0 auto; padding: 1.25rem 1.25rem 4rem; }
+    .mast {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding-bottom: .75rem; border-bottom: 2px solid var(--line);
+      font-size: .78rem; letter-spacing: .12em; text-transform: uppercase;
     }
-    form { padding: 1.25rem; }
-    label { display: block; font-size: .9rem; color: var(--muted); }
+    .mast strong { letter-spacing: .16em; font-weight: 600; }
+    .mast span { color: var(--mute); letter-spacing: .08em; text-transform: none; }
+    h1 {
+      margin: 1.75rem 0 0;
+      font-size: 1.85rem; font-weight: 600; letter-spacing: -0.03em; line-height: 1.25;
+    }
+    .lede { margin: .85rem 0 0; color: var(--mute); line-height: 1.7; max-width: 28rem; }
+    form { margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
+    label { display: block; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; }
     input {
-      width: 100%; height: 48px; margin-top: .5rem; border: 0; border-radius: .375rem;
-      background: var(--bg); padding: 0 .9rem; font-family: "Source Code Pro", monospace; font-size: .9rem;
-      box-shadow: 0 0 0 1px var(--line);
+      width: 100%; margin-top: .55rem; border: 0; border-bottom: 1px solid var(--line);
+      background: transparent; padding: .7rem 0; font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: .92rem; color: var(--ink);
     }
-    input:focus { outline: none; box-shadow: 0 0 0 2px var(--accent); }
+    input:focus { outline: none; border-bottom-width: 2px; }
+    .row { display: flex; flex-wrap: wrap; gap: .75rem 1rem; justify-content: space-between; align-items: center; margin-top: 1.1rem; }
     button {
-      height: 48px; min-width: 10rem; border: 0; border-radius: .375rem; background: var(--accent); color: var(--accent-fg);
-      font-size: .9rem; font-weight: 500; cursor: pointer; padding: 0 1.1rem;
+      border: 0; background: var(--ink); color: #fff; height: 2.6rem; padding: 0 1.35rem;
+      font-size: .92rem; font-weight: 500; cursor: pointer; letter-spacing: .04em;
     }
-    button:disabled { opacity: .7; cursor: wait; }
-    .linkish { height: auto; min-width: 0; background: transparent; color: var(--accent); padding: 0; font-size: .9rem; }
-    .row { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: space-between; align-items: center; margin-top: 1rem; }
-    .hint { font-size: .75rem; color: var(--muted); line-height: 1.5; }
-    .mono { font-family: "Source Code Pro", monospace; font-size: 12px; word-break: break-all; }
-    .idbox { background: var(--bg); padding: .65rem .75rem; margin-top: .7rem; border-radius: .375rem; }
-    .field { display: grid; gap: .5rem; padding: 1.15rem 0; border-top: 1px solid var(--line); }
-    .check { display: flex; gap: 1rem; padding: .6rem 0; border-top: 1px solid var(--line); font-size: .9rem; }
-    .ok { color: var(--verify); width: 2.5rem; flex: 0 0 2.5rem; }
-    .bad { color: var(--warn); width: 2.5rem; flex: 0 0 2.5rem; }
-    .warn { color: var(--warn); font-size: .9rem; }
-    .muted { color: var(--muted); }
-    details.fold > summary { cursor: pointer; list-style: none; padding: 1.15rem 0; font-size: .9rem; border-top: 1px solid var(--line); }
+    button:disabled { opacity: .55; cursor: wait; }
+    .linkish { height: auto; padding: 0; background: transparent; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; letter-spacing: 0; }
+    .hint { font-size: .78rem; color: var(--mute); line-height: 1.5; margin: 0; }
+    .panel { margin-top: 1.75rem; border-top: 2px solid var(--line); padding-top: 1.1rem; }
+    .kicker { margin: 0; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
+    h2 { margin: .35rem 0 0; font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; }
+    .field { display: grid; gap: .35rem; padding: 1rem 0; border-top: 1px solid #d9d9d9; }
+    .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .78rem; word-break: break-all; }
+    .idbox { background: var(--wash); padding: .7rem .8rem; margin-top: .55rem; }
+    .check { display: flex; gap: 1rem; padding: .55rem 0; border-top: 1px solid #ececec; font-size: .92rem; }
+    .ok { color: var(--ok); width: 2.6rem; flex: 0 0 2.6rem; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; }
+    .bad { color: var(--bad); width: 2.6rem; flex: 0 0 2.6rem; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; }
+    .warn { color: var(--bad); }
+    .muted { color: var(--mute); }
+    details.fold > summary { cursor: pointer; list-style: none; padding: 1rem 0; border-top: 1px solid #d9d9d9; font-size: .92rem; }
     details.fold > summary::-webkit-details-marker { display: none; }
-    .td-item { padding: 1rem 0; border-top: 1px solid var(--line); }
+    .td-item { padding: .9rem 0; border-top: 1px solid #ececec; }
     @media (min-width: 640px) {
-      h1 { font-size: 2.25rem; }
-      form { padding: 1.5rem; }
-      .field { grid-template-columns: 7.5rem minmax(0,1fr); gap: 1.5rem; }
+      .page { padding-top: 2rem; }
+      h1 { font-size: 2.15rem; }
+      .field { grid-template-columns: 6.5rem minmax(0,1fr); gap: 1.25rem; align-items: start; }
     }
     @media (max-width: 420px) { #go { width: 100%; } }
   </style>
 </head>
 <body>
-  <header>
-    <div class="bar">
-      <span style="font-weight:500;letter-spacing:.04em">OIN</span>
-      <span class="muted" style="font-size:.9rem">公共测试节点</span>
+  <div class="page">
+    <div class="mast">
+      <strong>OIN Record</strong>
+      <span>公共测试节点 · oin.timfi.top</span>
     </div>
-  </header>
-  <div class="wrap">
-    <h1>把网页写成一份<br/>可以回头核对的记录。</h1>
-    <p class="lede">贴一个地址。节点会把它记下来，并告诉你签字是否还在、内容是否被改过、时间是谁说的。</p>
-    <form id="form" class="sheet">
+    <h1>把网址登记成一份<br/>可以回头核对的卷宗。</h1>
+    <p class="lede">节点只记录谁在何时看到了什么。它核对手写签字和内容有没有被改过，不替你判断页面本身是真是假。</p>
+    <form id="form">
       <label for="url">网址</label>
       <input id="url" value="https://example.com" inputmode="url" autocomplete="off" spellcheck="false" />
       <div class="row">
-        <p class="hint">测试环境，数据可能被重置。请勿用于生产。</p>
-        <button id="go" type="submit">记录这个页面</button>
+        <p class="hint">测试环境，记录可能被清空。默认的 example.com 已被登记过，提交后会看到系统如何拦住重复时间。</p>
+        <button id="go" type="submit">登记</button>
       </div>
     </form>
     <div id="out"></div>
-    <section id="takedowns" class="sheet" style="padding:1.5rem 2rem 1rem"></section>
+    <section id="takedowns" class="panel"></section>
   </div>
   <script>
     const API = "https://oin.timfi.top";
@@ -110,7 +120,12 @@
       return new Intl.DateTimeFormat("zh-CN", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(d) + " UTC";
     }
     function escapeHtml(s) {
-      return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&", "<": "<", ">": ">", '"': """, "'": "&#39;" }[c]));
+      return String(s)
+        .replace(/&/g, "&" + "amp;")
+        .replace(/</g, "&" + "lt;")
+        .replace(/>/g, "&" + "gt;")
+        .replace(/"/g, "&" + "quot;")
+        .replace(/'/g, "&#39;");
     }
     function check(ok, label, hint) {
       return `<div class="check"><span class="${ok ? "ok" : "bad"}">${ok ? "通过" : "未过"}</span><div><strong>${label}</strong><div class="hint">${hint}</div></div></div>`;
@@ -128,15 +143,76 @@
       return "";
     }
     function statusLabel(v) {
-      return ({ pending: "待处理", accepted: "已受理", rejected: "已拒绝", completed: "已完成" }[v] || v || "未知");
+      return ({ pending: "待处理", resolved: "已处理", disputed: "有异议", rejected: "已驳回", accepted: "已受理", completed: "已完成" }[v] || v || "未知");
     }
     function actionLabel(v) {
-      return ({ hide: "隐藏", remove: "删除", tombstone: "标记下架" }[v] || v || "未知");
+      return ({ hide: "隐藏", delete: "删除", remove: "删除", tombstone: "标记下架" }[v] || v || "未知");
     }
     function previewContent(value) {
       const text = (value || "").trim();
       if (!text) return "（无摘要）";
       return text.length <= 20 ? text : text.slice(0, 20);
+    }
+    function signerBlock(signer) {
+      if (!signer) return `<p class="muted">这次返回里没有签名者公钥。</p>`;
+      return `<p>签名者 <span class="mono">${escapeHtml(abbreviateKey(signer))}</span></p>
+        <button type="button" class="linkish" data-full="${escapeHtml(signer)}">展开完整公钥</button>
+        <p class="mono signer-full" style="display:none;margin-top:.5rem"></p>`;
+    }
+    function historyBlock(versions, conflictCount, open) {
+      const rows = versions.length ? versions.map((row) => `
+        <div class="td-item">
+          <p style="margin:0">${escapeHtml(when(row.capturedAt))}</p>
+          <p class="mono muted" style="margin:.35rem 0 0">签名者 ${escapeHtml(row.signer ? abbreviateKey(row.signer) : "未知")}</p>
+          <p class="mono muted" style="margin:.25rem 0 0">内容摘要 ${escapeHtml(row.contentPreview)}</p>
+        </div>`).join("") : `<p class="muted">暂时没有读到历史版本。</p>`;
+      return `<details class="fold"${open ? " open" : ""}>
+        <summary>已归档版本 · ${versions.length} 条</summary>
+        ${rows}
+        ${conflictCount > 0 ? `<p class="hint">节点里另有 ${conflictCount} 组版本对照。</p>` : ""}
+      </details>`;
+    }
+    function bindSignerExpand(root) {
+      const expand = root.querySelector(".linkish");
+      if (!expand) return;
+      expand.addEventListener("click", () => {
+        const full = root.querySelector(".signer-full");
+        const showing = full.style.display !== "none";
+        full.style.display = showing ? "none" : "block";
+        full.textContent = expand.getAttribute("data-full") || "";
+        expand.textContent = showing ? "展开完整公钥" : "收起完整公钥";
+      });
+    }
+    async function loadHistory(objectId) {
+      const versions = [];
+      let conflictCount = 0;
+      if (!objectId) return { versions, conflictCount };
+      try {
+        const cRes = await fetch(API + "/v1/objects/" + encodeURIComponent(objectId) + "/conflicts");
+        if (cRes.ok) {
+          const cJson = await cRes.json();
+          if (Array.isArray(cJson)) conflictCount = cJson.length;
+        }
+      } catch {}
+      try {
+        const oRes = await fetch(API + "/v1/objects/" + encodeURIComponent(objectId) + "/observations");
+        if (oRes.ok) {
+          const oJson = await oRes.json();
+          if (Array.isArray(oJson)) {
+            oJson.forEach((item) => {
+              if (!item.observation_id) return;
+              versions.push({
+                observationId: item.observation_id,
+                capturedAt: item.capture && item.capture.captured_at,
+                signer: signerFromManifest(item),
+                contentPreview: previewContent((item.content && item.content.raw_content_hash) || (item.object && item.object.canonical_url) || ""),
+              });
+            });
+            versions.sort((a, b) => String(b.capturedAt || "").localeCompare(String(a.capturedAt || "")));
+          }
+        }
+      } catch {}
+      return { versions, conflictCount };
     }
 
     async function loadTakedowns() {
@@ -146,25 +222,25 @@
         const data = await res.json();
         const records = Array.isArray(data.records) ? data.records : [];
         const total = typeof data.total === "number" ? data.total : records.length;
-        let html = `<p class="muted" style="font-size:.9rem;margin:0">公共节点</p><h2>下架请求记录</h2><p class="muted">只显示编号、对象、时间、状态和动作，不展示申请人身份和理由。</p>`;
+        let html = `<p class="kicker">公开台账</p><h2>下架请求</h2><p class="hint">只列编号、对象、时间、状态和动作。申请人身份和理由不在这里出现。</p>`;
         if (!records.length) {
-          html += `<p>下架请求功能已就绪，尚无真实下架案例</p>`;
+          html += `<p>功能已就绪，目前还没有真实下架案例。</p>`;
         } else {
           html += records.map((row) => `
             <div class="td-item">
               <div class="row" style="margin:0">
                 <p style="margin:0">${escapeHtml(statusLabel(row.status))} · ${escapeHtml(actionLabel(row.action))}</p>
-                <p class="hint" style="margin:0">${escapeHtml(when(row.requested_at))}</p>
+                <p class="hint">${escapeHtml(when(row.requested_at))}</p>
               </div>
-              <p class="mono" style="margin:.5rem 0 0">${escapeHtml(row.request_id || "（无编号）")}</p>
-              <p class="mono muted" style="margin:.25rem 0 0">${escapeHtml(row.target_object_id || "（无对象编号）")}</p>
+              <p class="mono" style="margin:.45rem 0 0">${escapeHtml(row.request_id || "（无编号）")}</p>
+              <p class="mono muted" style="margin:.2rem 0 0">${escapeHtml(row.target_object_id || "（无对象编号）")}</p>
             </div>
           `).join("");
-          html += `<p class="hint">共 ${total} 条，这里显示最近 ${records.length} 条。</p>`;
+          html += `<p class="hint">共 ${total} 条，这里列最近 ${records.length} 条。</p>`;
         }
         takedownsEl.innerHTML = html;
       } catch (err) {
-        takedownsEl.innerHTML = `<p class="muted" style="font-size:.9rem;margin:0">公共节点</p><h2>下架请求记录</h2><p class="warn">连不上节点，暂时读不到下架记录。</p>`;
+        takedownsEl.innerHTML = `<p class="kicker">公开台账</p><h2>下架请求</h2><p class="warn">连不上节点，暂时读不到下架记录。</p>`;
       }
     }
 
@@ -176,8 +252,8 @@
         return;
       }
       go.disabled = true;
-      go.textContent = "正在记录";
-      out.innerHTML = `<div class="sheet" style="padding:1.25rem 1.5rem">正在抓取并签字。通常十几秒，请不要关掉页面。</div>`;
+      go.textContent = "登记中";
+      out.innerHTML = `<div class="panel"><p class="kicker">处理中</p><h2>正在抓取并签字</h2><p class="muted">通常十几秒，请不要关掉页面。</p></div>`;
       try {
         const capRes = await fetch(API + "/v1/captures", {
           method: "POST",
@@ -190,13 +266,19 @@
         }
         if (capRes.status === 422 && payload && payload.detail && payload.detail.reason === "TIMESTAMP_EVIDENCE_REQUIRED") {
           const n = payload.detail.prior_observation_count;
-          out.innerHTML = `<div class="sheet" style="padding:1.5rem 2rem">
-            <p class="muted" style="font-size:.9rem;color:var(--held)">没有写成新记录</p>
-            <h2>这份内容以前已经记过了</h2>
-            <p>节点拒绝再写一条“新时间”的记录。这不是故障。有人如果把同一页内容重新签一次、换一个时间再交上来，系统会拦住——这正是它在防止时间被悄悄改掉。</p>
+          const objectId = payload.detail.object_id;
+          const hist = await loadHistory(objectId);
+          const first = hist.versions[0];
+          out.innerHTML = `<div class="panel">
+            <p class="kicker">未写入新卷</p>
+            <h2>这份内容以前已经登记过了</h2>
+            <p>节点拒绝再写一条“新时间”。这不是故障。同一页被重新签字、换一个时间交上来，系统会拦住——这正是它在防止时间被悄悄改掉。</p>
             <p class="muted">第一次记录仍然有效。如果确实需要再记一次，必须带上独立时间戳服务的盖章。</p>
             ${n != null ? `<p class="mono muted">库里已有 ${n} 条同一内容的记录</p>` : ""}
+            <div class="field"><p class="muted" style="margin:0">签名者</p><div>${signerBlock(first && first.signer)}</div></div>
+            ${historyBlock(hist.versions, hist.conflictCount, true)}
           </div>`;
+          bindSignerExpand(out);
           return;
         }
         if (!capRes.ok) {
@@ -216,63 +298,22 @@
           verifyError = "记录已经写下，但核对这一步暂时连不上节点。";
         }
         const objectId = payload.manifest?.object?.object_id;
-        let versions = [];
-        let conflictCount = 0;
-        if (objectId) {
-          try {
-            const cRes = await fetch(API + "/v1/objects/" + encodeURIComponent(objectId) + "/conflicts");
-            if (cRes.ok) {
-              const cJson = await cRes.json();
-              if (Array.isArray(cJson)) conflictCount = cJson.length;
-            }
-          } catch {}
-          try {
-            const oRes = await fetch(API + "/v1/objects/" + encodeURIComponent(objectId) + "/observations");
-            if (oRes.ok) {
-              const oJson = await oRes.json();
-              if (Array.isArray(oJson)) {
-                versions = oJson.map((item) => ({
-                  observationId: item.observation_id || "",
-                  capturedAt: item.capture && item.capture.captured_at,
-                  signer: signerFromManifest(item),
-                  contentPreview: previewContent((item.content && item.content.raw_content_hash) || (item.object && item.object.canonical_url) || ""),
-                })).filter((row) => row.observationId).sort((a, b) => String(b.capturedAt || "").localeCompare(String(a.capturedAt || "")));
-              }
-            }
-          } catch {}
-        }
+        const hist = await loadHistory(objectId);
         const sig = verify?.manifest?.signature_valid === true;
         const hash = verify?.archive_hash_valid === true && verify?.raw_content_hash_valid === true && verify?.raw_content_bytes_valid === true;
         const mid = verify?.manifest?.manifest_id_valid === true;
         const overall = verify?.status === "VALID";
         const kind = verify?.timestamp?.kind || payload.timestamp_evidence?.kind;
         const third = kind === "rfc3161";
-        const signerBlock = signer
-          ? `<p>签名者：<span class="mono">${escapeHtml(abbreviateKey(signer))}</span></p>
-             <button type="button" class="linkish" data-full="${escapeHtml(signer)}">点击展开完整公钥</button>
-             <p class="mono signer-full" style="display:none;margin-top:.5rem"></p>`
-          : `<p class="muted">这次返回里没有签名者公钥。</p>`;
-        const historyBlock = `
-          <details class="fold">
-            <summary>该记录的历史版本（共 ${versions.length} 个版本）</summary>
-            ${versions.length ? versions.map((row) => `
-              <div class="td-item">
-                <p style="margin:0">${escapeHtml(when(row.capturedAt))}</p>
-                <p class="mono muted" style="margin:.35rem 0 0">签名者 ${escapeHtml(row.signer ? abbreviateKey(row.signer) : "未知")}</p>
-                <p class="mono muted" style="margin:.25rem 0 0">内容摘要 ${escapeHtml(row.contentPreview)}</p>
-              </div>
-            `).join("") : `<p class="muted">暂时没有读到历史版本。</p>`}
-            ${conflictCount > 0 ? `<p class="hint">节点里另有 ${conflictCount} 组版本对照记录。</p>` : ""}
-          </details>`;
-        out.innerHTML = `<div class="sheet" style="padding:1.5rem 2rem 2rem">
-          <div style="display:flex;justify-content:space-between;gap:1rem">
-            <div><p class="muted" style="font-size:.9rem;margin:0">记录</p><h2>已写入节点</h2></div>
-            <p style="color:${overall ? "var(--verify)" : "var(--muted)"};font-size:.9rem">${overall ? "核对通过" : verify ? "核对未完全通过" : "已写下，待核对"}</p>
+        out.innerHTML = `<div class="panel">
+          <div class="row" style="margin:0">
+            <div><p class="kicker">卷宗</p><h2>已写入节点</h2></div>
+            <p class="${overall ? "ok" : "muted"}" style="width:auto;flex:none">${overall ? "核对通过" : verify ? "核对未完全通过" : "已写下，待核对"}</p>
           </div>
           <div class="field"><p class="muted" style="margin:0">网址</p><div><p class="mono">${escapeHtml(page)}</p><p class="hint">${escapeHtml(when(captured))}</p></div></div>
-          <div class="field"><p class="muted" style="margin:0">签名者</p><div>${signerBlock}</div></div>
+          <div class="field"><p class="muted" style="margin:0">签名者</p><div>${signerBlock(signer)}</div></div>
           <div class="field"><p class="muted" style="margin:0">记录编号</p><div>
-            <p>这串编号是这份记录的身份证。之后用它来核对内容有没有被改、签字还在不在。它不是网址，也不是密码。</p>
+            <p>这串编号是这份记录的身份证。之后用它核对内容有没有被改、签字还在不在。它不是网址，也不是密码。</p>
             <div class="idbox mono">${escapeHtml(id)}</div></div></div>
           <div class="field"><p class="muted" style="margin:0">核对</p><div>
             <p>系统在问三件事：签字是否对得上、抓下来的内容有没有被改过、编号是否对得上这份内容。</p>
@@ -290,24 +331,15 @@
               : "现在记下的时间，是这个公共测试节点自己说的。它能证明内容被签过名、没有被改过，但不能单独当成第三方时间证明。"}</p>
             <p class="hint">记录时间 ${escapeHtml(when(verify?.timestamp?.captured_at || captured))}${third && verify?.timestamp?.tsa_time ? " · 盖章时间 " + escapeHtml(when(verify.timestamp.tsa_time)) : ""}</p>
           </div></div>
-          ${historyBlock}
+          ${historyBlock(hist.versions, hist.conflictCount, hist.versions.length > 1)}
         </div>`;
-        const expand = out.querySelector(".linkish");
-        if (expand) {
-          expand.addEventListener("click", () => {
-            const full = out.querySelector(".signer-full");
-            const showing = full.style.display !== "none";
-            full.style.display = showing ? "none" : "block";
-            full.textContent = expand.getAttribute("data-full") || "";
-            expand.textContent = showing ? "点击展开完整公钥" : "收起完整公钥";
-          });
-        }
+        bindSignerExpand(out);
       } catch (err) {
         const msg = err && err.message ? err.message : "连不上存证节点。请检查网络后重试。";
-        out.innerHTML = `<div class="sheet" style="padding:1.25rem 1.5rem"><p><strong>这次没记成</strong></p><p class="muted">${escapeHtml(msg)}</p></div>`;
+        out.innerHTML = `<div class="panel"><p class="kicker">未完成</p><h2>这次没记成</h2><p class="muted">${escapeHtml(msg)}</p></div>`;
       } finally {
         go.disabled = false;
-        go.textContent = "记录这个页面";
+        go.textContent = "登记";
       }
     });
 
