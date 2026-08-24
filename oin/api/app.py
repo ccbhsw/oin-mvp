@@ -531,6 +531,28 @@ def submit_takedown(takedown: TakedownRequest) -> dict[str, str]:
     return {"status": "received", "request_id": takedown.request_id}
 
 
+@app.get("/v1/takedown")
+def list_takedowns(limit: int = 50, offset: int = 0) -> dict[str, Any]:
+    limit = max(1, min(limit, 100))
+    offset = max(0, offset)
+    rows, total = repo.list_takedowns(limit, offset)
+    return {
+        "records": [
+            {
+                "request_id": row.request_id,
+                "target_object_id": row.target_object_id,
+                "requested_at": row.requested_at.isoformat() if row.requested_at else None,
+                "status": row.status,
+                "action": row.action,
+            }
+            for row in rows
+        ],
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+    }
+
+
 @app.get("/v1/takedown/{request_id}")
 def get_takedown(request_id: str) -> dict[str, Any]:
     row = repo.get_takedown(request_id)

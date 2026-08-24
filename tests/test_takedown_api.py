@@ -15,7 +15,7 @@ except ImportError:
     UTC = timezone.utc
 
 
-def _signed_payload(request_id: str) -> dict:
+def _signed_payload(request_id: str, requested_at: datetime | None = None) -> dict:
     private_key = Ed25519PrivateKey.generate()
     pubkey = private_key.public_key().public_bytes(
         serialization.Encoding.Raw, serialization.PublicFormat.Raw
@@ -25,7 +25,7 @@ def _signed_payload(request_id: str) -> dict:
         target_object_id="oin:object:sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
         requester_pubkey=pubkey,
         reason="copyright infringement",
-        requested_at=datetime(2026, 8, 22, 12, 0, 0, tzinfo=UTC),
+        requested_at=requested_at or datetime(2026, 8, 22, 12, 0, 0, tzinfo=UTC),
         request_type="standard",
         action="hide",
         status="pending",
@@ -77,3 +77,50 @@ def test_submit_takedown_invalid_json_schema():
     client = TestClient(app)
     response = client.post("/v1/takedown", json={"reason": "missing required fields"})
     assert response.status_code == 422
+
+
+def test_list_takedowns_pagination_and_order():
+    _replay_cache.clear()
+    client = TestClient(app)
+    newest = _signed_payload(
+        "oin:request:sha256:" + "aa" * 32,
+        requested_at=datetime(2026, 12, 3, 12, 0, 0, tzinfo=UTC),
+    )
+    middle = _signed_payload(
+        "oin:request:sha256:" + "bb" * 32,
+        requested_at=datetime(2026, 12, 2, 12, 0, 0, tzinfo=UTC),
+    )
+    oldest = _signed_payload(
+        "oin:request:sha256:" + "cc" * 32,
+        requested_at=datetime(2026, 12, 1, 12, 0, 0, tzinfo=UTC),
+    )
+    for payload in (oldest, newest, middle):
+        created = client.post("/v1/takedown", json=payload)
+        assert created.status_code == 201
+
+    page = client.get("/v1/takedown", params={"limit": 2, "offset": 0})
+    assert page.status_code == 200
+    body = page.json()
+    assert body["limit"] == 2
+    assert body["offset"] == 0
+    assert body["total"] >= 3
+    assert len(body["records"]) == 2
+    assert body["records"][0]["request_id"] == newest["request_id"]
+    assert body["records"][1]["request_id"] == middle["request_id"]
+    assert set(body["records"][0].keys()) == {
+        "request_id",
+        "target_object_id",
+        "requested_at",
+        "status",
+        "action",
+    }
+    assert "reason" not in body["records"][0]
+    assert "requester_pubkey" not in body["records"][0]
+    assert "jurisdiction" not in body["records"][0]
+    assert "legal_basis" not in body["records"][0]
+    assert "verification_document" not in body["records"][0]
+
+    second = client.get("/v1/takedown", params={"limit": 2, "offset": 2})
+    assert second.status_code == 200
+    second_body = second.json()
+    assert second_body["records"][0]["request_id"] == oldest["request_id"]

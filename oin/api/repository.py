@@ -20,6 +20,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
     create_engine,
+    func,
     select,
 )
 from sqlalchemy.exc import IntegrityError
@@ -308,3 +309,18 @@ class Repository:
     def get_takedown(self, request_id: str) -> Takedown | None:
         with self.session_factory() as session:
             return session.get(Takedown, request_id)
+
+    def list_takedowns(self, limit: int = 50, offset: int = 0) -> tuple[list[Takedown], int]:
+        limit = max(1, min(int(limit), 100))
+        offset = max(0, int(offset))
+        with self.session_factory() as session:
+            total = session.scalar(select(func.count()).select_from(Takedown)) or 0
+            rows = list(
+                session.scalars(
+                    select(Takedown)
+                    .order_by(Takedown.requested_at.desc(), Takedown.request_id.desc())
+                    .offset(offset)
+                    .limit(limit)
+                )
+            )
+            return rows, int(total)

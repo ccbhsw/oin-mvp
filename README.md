@@ -123,6 +123,7 @@ curl -X POST http://localhost:8003/v1/replication/pull \
 | --- | --- |
 | `POST /v1/captures` | 捕获公开 URL 并产生已签名 Observation |
 | `POST /v1/takedown` | 提交已签名下架请求；验签失败 403，重复提交 409 |
+| `GET /v1/takedown` | 分页列出已受理的下架请求；列表只返回 request_id、target_object_id、requested_at、status、action |
 | `GET /v1/takedown/{id}` | 查询已受理的下架请求 |
 | `GET /v1/objects/{id}/observations` | 列出同一 Object 的**全部** Observation |
 | `GET /v1/objects/{id}/conflicts` | 返回 divergence / temporal variation 关联 |
