@@ -11,6 +11,7 @@ from typing import Any
 
 import httpx
 from fastapi import FastAPI, HTTPException, Response
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
@@ -277,6 +278,13 @@ app = FastAPI(title="OIN MVP Observer Node", version="0.1.0", description="Signe
 app.add_middleware(MaxBodySizeMiddleware)
 app.add_middleware(SimplePostRateLimitMiddleware)
 app.add_middleware(PublicLockdownMiddleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
 
 _REPLAY_WINDOW_SECONDS = 300
 _replay_cache: dict[str, float] = {}
