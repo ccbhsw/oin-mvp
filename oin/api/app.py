@@ -24,6 +24,8 @@ from oin.capture.http_capture import (
     validate_capture_url,
     validate_replication_peer_url,
 )
+from oin.capture.file_capture import capture_file
+from oin.capture.text_capture import capture_text
 from oin.discovery import BootstrapRegistry
 from oin.discovery.audit import DiscoveryAuditLog
 from oin.discovery.bootstrap import MAX_BUNDLE_BYTES
@@ -188,6 +190,17 @@ class CaptureRequest(BaseModel):
     archive_format: str = Field(default="wacz", pattern="^(warc|wacz)$")
     resource_type: str = Field(default="html", pattern="^(html|document|feed|other)$")
     tsa_url: str | None = None
+
+
+class TextCaptureRequest(BaseModel):
+    text: str = Field(..., min_length=1)
+    object_identifier: str | None = None
+
+
+class FileCaptureRequest(BaseModel):
+    content_b64: str
+    filename: str
+    object_identifier: str | None = None
 
 
 class ReplicationEnvelope(BaseModel):
@@ -367,6 +380,42 @@ def create_capture(request: CaptureRequest) -> dict[str, Any]:
         "manifest": manifest,
         "timestamp_evidence": evidence,
         **ingest(manifest, archive, source="capture", timestamp_evidence=evidence),
+    }
+
+
+@app.post("/v1/captures/text", status_code=201)
+def create_text_capture(request: TextCaptureRequest) -> dict[str, Any]:
+    try:
+        captured = capture_text(request.text, request.object_identifier, private_key=observer_key())
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    evidence = local_declaration(captured["manifest"])
+    ingested = ingest(captured["manifest"], captured["archive"], source="text-capture", timestamp_evidence=evidence)
+    return {
+        **ingested,
+        "object_id": captured["object_id"],
+        "canonical_id_provided": captured["canonical_id_provided"],
+        "content_type": captured["content_type"],
+    }
+
+
+@app.post("/v1/captures/file", status_code=201)
+def create_file_capture(request: FileCaptureRequest) -> dict[str, Any]:
+    try:
+        content = base64.b64decode(request.content_b64, validate=True)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail="content_b64 is invalid") from exc
+    try:
+        captured = capture_file(content, request.filename, request.object_identifier, private_key=observer_key())
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    evidence = local_declaration(captured["manifest"])
+    ingested = ingest(captured["manifest"], captured["archive"], source="file-capture", timestamp_evidence=evidence)
+    return {
+        **ingested,
+        "object_id": captured["object_id"],
+        "canonical_id_provided": captured["canonical_id_provided"],
+        "content_type": captured["content_type"],
     }
 
 

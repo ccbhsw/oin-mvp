@@ -9,7 +9,7 @@ try:
 except ImportError:
     import datetime as dt
     UTC = dt.timezone.utc
-from typing import Any, Literal
+from typing import Any, Literal, Optional
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import (
     Ed25519PrivateKey,
@@ -53,6 +53,8 @@ class InformationObject(BaseModel):
     supersedes: list[str] = Field(default_factory=list)
     witnesses: list[dict[str, str]] = Field(default_factory=list)
     metadata: dict[str, Any] = Field(default_factory=dict)
+    content_type: Optional[str] = Field(default=None, max_length=255)
+    canonical_id: Optional[str] = Field(default=None, max_length=4096)
 
     @field_validator("id")
     @classmethod

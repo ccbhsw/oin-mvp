@@ -28,6 +28,8 @@ def build_observation(
     archive_format: str = "wacz",
     resource_type: str = "html",
     semantic_identifiers: dict[str, str] | None = None,
+    identity_object_id: str | None = None,
+    object_extras: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any], bytes]:
     """Sign the core manifest and return it with the selected raw archive bytes."""
     if archive_format not in {"warc", "wacz"}:
@@ -36,16 +38,19 @@ def build_observation(
     archive_type = "application/wacz" if archive_format == "wacz" else "application/warc"
     canonical_url = canonicalize_url(capture.observed_url)
     public = public_document(private_key)
+    object_data: dict[str, Any] = {
+        "object_id": identity_object_id or object_id(canonical_url, resource_type),
+        "canonical_url": canonical_url,
+        "original_url": capture.requested_url,
+        "observed_url": capture.observed_url,
+        "resource_type": resource_type,
+        "semantic_identifiers": semantic_identifiers or {},
+    }
+    if object_extras:
+        object_data.update(object_extras)
     manifest: dict[str, Any] = {
         "protocol_version": PROTOCOL_VERSION,
-        "object": {
-            "object_id": object_id(canonical_url, resource_type),
-            "canonical_url": canonical_url,
-            "original_url": capture.requested_url,
-            "observed_url": capture.observed_url,
-            "resource_type": resource_type,
-            "semantic_identifiers": semantic_identifiers or {},
-        },
+        "object": object_data,
         "observer": public,
         "capture": {
             "captured_at": capture.captured_at,
