@@ -394,6 +394,8 @@ def create_text_capture(request: TextCaptureRequest) -> dict[str, Any]:
     ingested = ingest(captured["manifest"], captured["archive"], source="text-capture", timestamp_evidence=evidence)
     return {
         **ingested,
+        "manifest": captured["manifest"],
+        "timestamp_evidence": evidence,
         "object_id": captured["object_id"],
         "canonical_id_provided": captured["canonical_id_provided"],
         "content_type": captured["content_type"],
@@ -414,6 +416,8 @@ def create_file_capture(request: FileCaptureRequest) -> dict[str, Any]:
     ingested = ingest(captured["manifest"], captured["archive"], source="file-capture", timestamp_evidence=evidence)
     return {
         **ingested,
+        "manifest": captured["manifest"],
+        "timestamp_evidence": evidence,
         "object_id": captured["object_id"],
         "canonical_id_provided": captured["canonical_id_provided"],
         "content_type": captured["content_type"],

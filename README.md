@@ -17,7 +17,7 @@ OIN MVP 是一个**签名、可复制、冲突保留**的公共信息 Observatio
 - 节点状态：https://oin.timfi.top/healthz
 - 接口文档：https://oin.timfi.top/docs
 
-演示页用来贴一个网址、看签字和历史版本。根路径 https://oin.timfi.top/ 本身没有页面，会返回 `Not Found`。
+演示页支持网址、文本、图片/文件和语音，可切换中文与 English。根路径 https://oin.timfi.top/ 本身没有页面，会返回 `Not Found`。
 
 命令行客户端：
 
